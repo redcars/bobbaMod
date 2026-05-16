@@ -20,7 +20,9 @@ object MojangApi {
 
     private data class ProfileResponse(val id: String?, val name: String?)
 
-    fun resolveUuid(ign: String): CompletableFuture<UUID?> {
+    data class MojangProfile(val uuid: UUID, val name: String)
+
+    fun resolveProfile(ign: String): CompletableFuture<MojangProfile?> {
         val request = HttpRequest.newBuilder()
             .uri(URI.create("https://api.mojang.com/users/profiles/minecraft/$ign"))
             .timeout(Duration.ofSeconds(5))
@@ -29,10 +31,13 @@ object MojangApi {
         return http.sendAsync(request, HttpResponse.BodyHandlers.ofString())
             .thenApply { resp ->
                 if (resp.statusCode() != 200) return@thenApply null
-                gson.fromJson(resp.body(), ProfileResponse::class.java)?.id?.let(::dashUuid)
+                val parsed = gson.fromJson(resp.body(), ProfileResponse::class.java) ?: return@thenApply null
+                val uuid = parsed.id?.let(::dashUuid) ?: return@thenApply null
+                val name = parsed.name ?: return@thenApply null
+                MojangProfile(uuid, name)
             }
             .exceptionally { e ->
-                logger.warn("Failed to resolve UUID for {}: {}", ign, e.message)
+                logger.warn("Failed to resolve profile for {}: {}", ign, e.message)
                 null
             }
     }

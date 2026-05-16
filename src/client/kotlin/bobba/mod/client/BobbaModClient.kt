@@ -8,6 +8,7 @@ import bobba.mod.client.presence.ServerPresenceDetection
 import bobba.mod.client.presence.TestPresenceCommand
 import bobba.mod.client.watchlist.Watchlist
 import bobba.mod.client.watchlist.WatchlistCommands
+import bobba.mod.client.watchlist.WatchlistRefresher
 import net.fabricmc.api.ClientModInitializer
 
 object BobbaModClient : ClientModInitializer {
@@ -20,5 +21,6 @@ object BobbaModClient : ClientModInitializer {
 		TestPartyCommand.register()
 		ServerPresenceDetection.init()
 		TestPresenceCommand.register()
+		WatchlistRefresher.init()
 	}
 }

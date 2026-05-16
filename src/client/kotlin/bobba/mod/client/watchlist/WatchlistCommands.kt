@@ -1,5 +1,7 @@
 package bobba.mod.client.watchlist
 
+import bobba.mod.client.hypixel.HypixelApi
+import bobba.mod.client.hypixel.HypixelRank
 import com.mojang.brigadier.arguments.StringArgumentType
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
@@ -46,8 +48,12 @@ object WatchlistCommands {
         }
         source.sendFeedback(Component.literal("Added $ign to your watchlist.").withStyle(ChatFormatting.GREEN))
 
-        MojangApi.resolveUuid(ign).thenAccept { uuid ->
-            if (uuid != null) Watchlist.attachUuid(ign, uuid)
+        MojangApi.resolveProfile(ign).thenAccept { profile ->
+            if (profile == null) return@thenAccept
+            Watchlist.attachProfile(ign, profile.uuid, profile.name)
+            HypixelApi.resolveRank(profile.uuid).thenAccept { rank ->
+                if (rank != null) Watchlist.attachRank(profile.uuid, rank)
+            }
         }
     }
 
@@ -68,8 +74,14 @@ object WatchlistCommands {
         }
         source.sendFeedback(Component.literal("Watchlist (${entries.size}):").withStyle(ChatFormatting.GOLD))
         entries.sortedBy { it.ign.lowercase() }.forEach { entry ->
-            val suffix = if (entry.uuid == null) " §7(pending UUID)" else ""
-            source.sendFeedback(Component.literal("§f - ${entry.ign}$suffix"))
+            val rank = entry.rank ?: HypixelRank.NONE
+            val prefix = if (rank.prefix.isNotEmpty()) "${rank.prefix} " else ""
+            val nameComponent = Component.literal("$prefix${entry.ign}").withStyle(rank.color)
+            val line = Component.literal(" - ").withStyle(ChatFormatting.WHITE).append(nameComponent)
+            if (entry.uuid == null) {
+                line.append(Component.literal(" (pending)").withStyle(ChatFormatting.GRAY))
+            }
+            source.sendFeedback(line)
         }
     }
 }

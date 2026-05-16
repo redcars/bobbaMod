@@ -1,5 +1,6 @@
 package bobba.mod.client.watchlist
 
+import bobba.mod.client.hypixel.HypixelRank
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
@@ -29,11 +30,22 @@ object Watchlist {
     fun getByUuid(uuid: UUID): WatchlistEntry? =
         byIgn.values.firstOrNull { it.uuid == uuid }
 
-    fun attachUuid(ign: String, uuid: UUID) {
-        val key = ign.lowercase()
-        val existing = byIgn[key] ?: return
-        if (existing.uuid == uuid) return
-        byIgn[key] = existing.copy(uuid = uuid)
+    fun attachProfile(typedIgn: String, uuid: UUID, canonicalIgn: String) {
+        val typedKey = typedIgn.lowercase()
+        val existing = byIgn[typedKey] ?: getByUuid(uuid) ?: return
+        val newKey = canonicalIgn.lowercase()
+        val updated = existing.copy(ign = canonicalIgn, uuid = uuid)
+        if (existing.ign.lowercase() != newKey) {
+            byIgn.remove(existing.ign.lowercase())
+        }
+        byIgn[newKey] = updated
+        save()
+    }
+
+    fun attachRank(uuid: UUID, rank: HypixelRank) {
+        val existing = getByUuid(uuid) ?: return
+        if (existing.rank == rank) return
+        byIgn[existing.ign.lowercase()] = existing.copy(rank = rank)
         save()
     }
 

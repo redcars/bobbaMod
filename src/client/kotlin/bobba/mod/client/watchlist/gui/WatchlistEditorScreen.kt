@@ -1,8 +1,11 @@
 package bobba.mod.client.watchlist.gui
 
+import bobba.mod.client.hypixel.HypixelApi
+import bobba.mod.client.hypixel.HypixelRank
 import bobba.mod.client.watchlist.MojangApi
 import bobba.mod.client.watchlist.Watchlist
 import bobba.mod.client.watchlist.WatchlistEntry
+import net.minecraft.ChatFormatting
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
@@ -60,8 +63,12 @@ class WatchlistEditorScreen(private val parent: Screen?) :
         val ign = addInput.value.trim()
         if (ign.isEmpty()) return
         if (Watchlist.add(WatchlistEntry(ign = ign))) {
-            MojangApi.resolveUuid(ign).thenAccept { uuid ->
-                if (uuid != null) Watchlist.attachUuid(ign, uuid)
+            MojangApi.resolveProfile(ign).thenAccept { profile ->
+                if (profile == null) return@thenAccept
+                Watchlist.attachProfile(ign, profile.uuid, profile.name)
+                HypixelApi.resolveRank(profile.uuid).thenAccept { rank ->
+                    if (rank != null) Watchlist.attachRank(profile.uuid, rank)
+                }
             }
         }
         addInput.value = ""
@@ -84,8 +91,14 @@ class WatchlistEditorScreen(private val parent: Screen?) :
         }
         entries.take(MAX_VISIBLE).forEachIndexed { i, entry ->
             val y = 70 + i * 22 + 6
-            val suffix = if (entry.uuid == null) " (pending)" else ""
-            graphics.drawString(font, "${entry.ign}$suffix", centerX - 100, y, 0xFFFFFFFF.toInt())
+            val rank = entry.rank ?: HypixelRank.NONE
+            val prefix = if (rank.prefix.isNotEmpty()) "${rank.prefix} " else ""
+            val nameComponent = Component.literal("$prefix${entry.ign}").withStyle(rank.color)
+            val line = Component.empty().append(nameComponent)
+            if (entry.uuid == null) {
+                line.append(Component.literal(" (pending)").withStyle(ChatFormatting.GRAY))
+            }
+            graphics.drawString(font, line, centerX - 100, y, 0xFFFFFFFF.toInt())
         }
         if (entries.size > MAX_VISIBLE) {
             graphics.drawCenteredString(

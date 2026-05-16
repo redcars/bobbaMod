@@ -4,6 +4,7 @@ import bobba.mod.client.watchlist.gui.WatchlistEditorScreen
 import com.google.gson.annotations.Expose
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorButton
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorText
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 
 class WatchlistCategory {
@@ -30,4 +31,10 @@ class WatchlistCategory {
     @ConfigOption(name = "Play sound on warning", desc = "Play a ding sound when a warning fires.")
     @ConfigEditorBoolean
     var playSound: Boolean = true
+
+    @JvmField
+    @Expose
+    @ConfigOption(name = "Hypixel API key", desc = "Your Hypixel API key (from developer.hypixel.net). Leave blank to skip rank lookups.")
+    @ConfigEditorText
+    var hypixelApiKey: String = ""
 }
