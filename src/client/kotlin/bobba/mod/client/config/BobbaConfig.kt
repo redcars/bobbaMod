@@ -9,4 +9,9 @@ class BobbaConfig : Config() {
     @Expose
     @Category(name = "Watchlist", desc = "Settings for the player watchlist")
     var watchlist: WatchlistCategory = WatchlistCategory()
+
+    @JvmField
+    @Expose
+    @Category(name = "API", desc = "External API integration settings")
+    var api: ApiCategory = ApiCategory()
 }

@@ -19,7 +19,7 @@ object HypixelApi {
         .build()
 
     fun resolveRank(uuid: UUID): CompletableFuture<HypixelRank?> {
-        val apiKey = ConfigManager.instance.watchlist.hypixelApiKey.trim()
+        val apiKey = ConfigManager.instance.api.hypixelApiKey.trim()
         if (apiKey.isEmpty()) return CompletableFuture.completedFuture(null)
 
         val undashed = uuid.toString().replace("-", "")

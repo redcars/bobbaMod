@@ -49,6 +49,13 @@ object Watchlist {
         save()
     }
 
+    fun attachRankByIgn(ign: String, rank: HypixelRank) {
+        val existing = getByIgn(ign) ?: return
+        if (existing.rank == rank) return
+        byIgn[existing.ign.lowercase()] = existing.copy(rank = rank)
+        save()
+    }
+
     fun renameByUuid(uuid: UUID, newIgn: String): Boolean {
         val existing = getByUuid(uuid) ?: return false
         if (existing.ign.equals(newIgn, ignoreCase = true)) return false

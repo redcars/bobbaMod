@@ -18,6 +18,21 @@ enum class HypixelRank(val prefix: String, val color: ChatFormatting) {
     OWNER("[OWNER]", ChatFormatting.RED);
 
     companion object {
+        fun fromPrefix(prefix: String): HypixelRank? = when (prefix.trim().uppercase()) {
+            "[VIP]" -> VIP
+            "[VIP+]" -> VIP_PLUS
+            "[MVP]" -> MVP
+            "[MVP+]" -> MVP_PLUS
+            "[MVP++]" -> MVP_PLUS_PLUS
+            "[YOUTUBE]" -> YOUTUBE
+            "[HELPER]" -> HELPER
+            "[MOD]" -> MODERATOR
+            "[GM]" -> GAME_MASTER
+            "[ADMIN]" -> ADMIN
+            "[OWNER]" -> OWNER
+            else -> null
+        }
+
         fun parseFromPlayer(player: JsonObject): HypixelRank {
             val rankStr = player.get("rank")?.takeIf { !it.isJsonNull }?.asString
             if (rankStr != null && rankStr != "NORMAL") {
