@@ -2,6 +2,8 @@ package bobba.mod.client
 
 import bobba.mod.client.config.ConfigCommand
 import bobba.mod.client.config.ConfigManager
+import bobba.mod.client.party.PartyDetection
+import bobba.mod.client.party.TestPartyCommand
 import bobba.mod.client.watchlist.Watchlist
 import bobba.mod.client.watchlist.WatchlistCommands
 import net.fabricmc.api.ClientModInitializer
@@ -12,5 +14,7 @@ object BobbaModClient : ClientModInitializer {
 		Watchlist.load()
 		WatchlistCommands.register()
 		ConfigCommand.register()
+		PartyDetection.init()
+		TestPartyCommand.register()
 	}
 }
