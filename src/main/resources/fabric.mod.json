@@ -3,7 +3,7 @@
 	"id": "bobbamod",
 	"version": "${version}",
 	"name": "BobbaMod",
-	"description": "Hypixel skyblock mod",
+	"description": "Hypixel skyblock QOL mod",
 	"authors": [
 		"redcars"
 	],
