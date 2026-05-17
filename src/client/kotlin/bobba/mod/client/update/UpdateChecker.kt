@@ -23,6 +23,24 @@ object UpdateChecker {
     private const val REPO_OWNER = "redcars"
     private const val REPO_NAME = "bobbaMod"
 
+    enum class State { IDLE, CHECKING, UP_TO_DATE, UPDATE_AVAILABLE, ERROR }
+
+    @Volatile
+    var state: State = State.IDLE
+        private set
+
+    @Volatile
+    var latestVersion: String? = null
+        private set
+
+    @Volatile
+    var latestUrl: String? = null
+        private set
+
+    @Volatile
+    var lastError: String? = null
+        private set
+
     private val http: HttpClient = HttpClient.newBuilder()
         .connectTimeout(Duration.ofSeconds(5))
         .build()
@@ -39,6 +57,7 @@ object UpdateChecker {
 
     fun forceCheck() {
         hasChecked.set(true)
+        if (state == State.CHECKING) return
         checkAsync(silentIfNoUpdate = false)
     }
 
@@ -47,7 +66,15 @@ object UpdateChecker {
         .map { it.metadata.version.friendlyString }
         .orElse("0.0.0")
 
+    fun openLatest() {
+        val latest = latestVersion ?: return
+        val url = latestUrl ?: return
+        notifyUpdateAvailable(currentVersion(), latest, url)
+    }
+
     private fun checkAsync(silentIfNoUpdate: Boolean) {
+        state = State.CHECKING
+        lastError = null
         val current = currentVersion()
         val request = HttpRequest.newBuilder()
             .uri(URI.create("https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/releases/latest"))
@@ -61,14 +88,22 @@ object UpdateChecker {
             .thenAccept { resp ->
                 when (resp.statusCode()) {
                     200 -> handleResponse(resp.body(), current, silentIfNoUpdate)
-                    404 -> if (!silentIfNoUpdate) notify("No releases published yet.", ChatFormatting.YELLOW)
+                    404 -> {
+                        state = State.ERROR
+                        lastError = "No releases yet"
+                        if (!silentIfNoUpdate) notify("No releases published yet.", ChatFormatting.YELLOW)
+                    }
                     else -> {
+                        state = State.ERROR
+                        lastError = "HTTP ${resp.statusCode()}"
                         logger.warn("GitHub releases returned {}", resp.statusCode())
                         if (!silentIfNoUpdate) notify("GitHub API returned ${resp.statusCode()}.", ChatFormatting.RED)
                     }
                 }
             }
             .exceptionally { e ->
+                state = State.ERROR
+                lastError = e.message ?: "unknown error"
                 logger.warn("Update check failed: {}", e.message)
                 if (!silentIfNoUpdate) notify("Update check failed: ${e.message}", ChatFormatting.RED)
                 null
@@ -80,14 +115,21 @@ object UpdateChecker {
         val tag = json.get("tag_name")?.asString
         val htmlUrl = json.get("html_url")?.asString
         if (tag == null || htmlUrl == null) {
+            state = State.ERROR
+            lastError = "Malformed response"
             if (!silentIfNoUpdate) notify("Malformed GitHub response.", ChatFormatting.RED)
             return
         }
         val latest = tag.removePrefix("v")
+        latestVersion = latest
+        latestUrl = htmlUrl
+
         if (isNewer(latest, current)) {
+            state = State.UPDATE_AVAILABLE
             notifyUpdateAvailable(current, latest, htmlUrl)
-        } else if (!silentIfNoUpdate) {
-            notify("Up to date (v$current).", ChatFormatting.GREEN)
+        } else {
+            state = State.UP_TO_DATE
+            if (!silentIfNoUpdate) notify("Up to date (v$current).", ChatFormatting.GREEN)
         }
     }
 
