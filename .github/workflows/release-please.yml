@@ -41,7 +41,18 @@ jobs:
         run: chmod +x ./gradlew
       - name: build
         run: ./gradlew build
+      - name: list build output
+        run: ls -la build/libs/
       - name: upload jar to release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload "${{ needs.release-please.outputs.tag_name }}" build/libs/*.jar --clobber
+          TAG: ${{ needs.release-please.outputs.tag_name }}
+        run: |
+          VERSION="${TAG#v}"
+          JAR="build/libs/bobbamod-${VERSION}.jar"
+          if [ ! -f "$JAR" ]; then
+            echo "Expected jar not found: $JAR"
+            ls -la build/libs/
+            exit 1
+          fi
+          gh release upload "$TAG" "$JAR" --clobber
