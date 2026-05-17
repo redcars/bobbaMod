@@ -6,6 +6,7 @@ import bobba.mod.client.party.PartyDetection
 import bobba.mod.client.party.TestPartyCommand
 import bobba.mod.client.presence.ServerPresenceDetection
 import bobba.mod.client.presence.TestPresenceCommand
+import bobba.mod.client.update.UpdateChecker
 import bobba.mod.client.watchlist.Watchlist
 import bobba.mod.client.watchlist.WatchlistCommands
 import bobba.mod.client.watchlist.WatchlistRefresher
@@ -22,5 +23,6 @@ object BobbaModClient : ClientModInitializer {
 		ServerPresenceDetection.init()
 		TestPresenceCommand.register()
 		WatchlistRefresher.init()
+		UpdateChecker.init()
 	}
 }

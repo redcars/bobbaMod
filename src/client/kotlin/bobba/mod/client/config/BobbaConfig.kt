@@ -14,4 +14,9 @@ class BobbaConfig : Config() {
     @Expose
     @Category(name = "API", desc = "External API integration settings")
     var api: ApiCategory = ApiCategory()
+
+    @JvmField
+    @Expose
+    @Category(name = "About", desc = "Version info and update settings")
+    var about: AboutCategory = AboutCategory()
 }
