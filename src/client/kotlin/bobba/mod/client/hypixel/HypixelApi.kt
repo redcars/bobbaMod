@@ -26,6 +26,7 @@ object HypixelApi {
         val request = HttpRequest.newBuilder()
             .uri(URI.create("https://api.hypixel.net/v2/player?uuid=$undashed"))
             .header("API-Key", apiKey)
+            .header("User-Agent", "BobbaMod (+https://github.com/redcars/bobbaMod)")
             .timeout(Duration.ofSeconds(10))
             .GET()
             .build()
@@ -37,7 +38,7 @@ object HypixelApi {
                     return@thenApply null
                 }
                 val json = JsonParser.parseString(resp.body()).asJsonObject
-                if (!json.get("success").asBoolean) return@thenApply null
+                if (json.get("success")?.asBoolean != true) return@thenApply null
                 val player = json.get("player")
                 if (player == null || player.isJsonNull) HypixelRank.NONE
                 else HypixelRank.parseFromPlayer(player.asJsonObject)

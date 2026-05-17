@@ -52,6 +52,7 @@ object UpdateChecker {
         val request = HttpRequest.newBuilder()
             .uri(URI.create("https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/releases/latest"))
             .header("Accept", "application/vnd.github+json")
+            .header("User-Agent", "BobbaMod (+https://github.com/redcars/bobbaMod)")
             .timeout(Duration.ofSeconds(10))
             .GET()
             .build()

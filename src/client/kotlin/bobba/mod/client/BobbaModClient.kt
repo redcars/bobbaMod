@@ -19,10 +19,13 @@ object BobbaModClient : ClientModInitializer {
 		WatchlistCommands.register()
 		ConfigCommand.register()
 		PartyDetection.init()
-		TestPartyCommand.register()
 		ServerPresenceDetection.init()
-		TestPresenceCommand.register()
 		WatchlistRefresher.init()
 		UpdateChecker.init()
+
+		if (ConfigManager.instance.about.debugCommands) {
+			TestPartyCommand.register()
+			TestPresenceCommand.register()
+		}
 	}
 }

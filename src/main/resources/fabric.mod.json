@@ -8,19 +8,13 @@
 		"redcars"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://github.com/redcars/bobbaMod",
+		"sources": "https://github.com/redcars/bobbaMod"
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/bobbamod/icon.png",
-	"environment": "*",
+	"environment": "client",
 	"entrypoints": {
-		"main": [
-			{
-				"value": "bobba.mod.BobbaMod",
-				"adapter": "kotlin"
-			}
-		],
 		"client": [
 			{
 				"value": "bobba.mod.client.BobbaModClient",
@@ -28,13 +22,6 @@
 			}
 		]
 	},
-	"mixins": [
-		"bobbamod.mixins.json",
-		{
-			"config": "bobbamod.client.mixins.json",
-			"environment": "client"
-		}
-	],
 	"depends": {
 		"fabricloader": ">=0.19.2",
 		"minecraft": "~1.21.11",

@@ -18,4 +18,13 @@ class AboutCategory {
     @ConfigOption(name = "Check now", desc = "Run an update check immediately.")
     @ConfigEditorButton(buttonText = "Check")
     var checkNow: Runnable = Runnable { UpdateChecker.forceCheck() }
+
+    @JvmField
+    @Expose
+    @ConfigOption(
+        name = "Enable debug commands",
+        desc = "Register /testparty and /testpresence for simulating events. Requires a restart to take effect."
+    )
+    @ConfigEditorBoolean
+    var debugCommands: Boolean = false
 }

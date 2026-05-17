@@ -25,6 +25,7 @@ object MojangApi {
     fun resolveProfile(ign: String): CompletableFuture<MojangProfile?> {
         val request = HttpRequest.newBuilder()
             .uri(URI.create("https://api.mojang.com/users/profiles/minecraft/$ign"))
+            .header("User-Agent", "BobbaMod (+https://github.com/redcars/bobbaMod)")
             .timeout(Duration.ofSeconds(5))
             .GET()
             .build()
@@ -46,6 +47,7 @@ object MojangApi {
         val undashed = uuid.toString().replace("-", "")
         val request = HttpRequest.newBuilder()
             .uri(URI.create("https://sessionserver.mojang.com/session/minecraft/profile/$undashed"))
+            .header("User-Agent", "BobbaMod (+https://github.com/redcars/bobbaMod)")
             .timeout(Duration.ofSeconds(5))
             .GET()
             .build()

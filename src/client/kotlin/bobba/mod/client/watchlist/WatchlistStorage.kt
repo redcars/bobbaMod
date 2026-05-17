@@ -8,7 +8,6 @@ import net.fabricmc.loader.api.FabricLoader
 import org.slf4j.LoggerFactory
 import java.nio.file.Files
 import java.nio.file.Path
-import java.time.Instant
 import java.util.UUID
 import kotlin.io.path.exists
 import kotlin.io.path.readText
@@ -19,10 +18,6 @@ object WatchlistStorage {
 
     private val gson = GsonBuilder()
         .setPrettyPrinting()
-        .registerTypeAdapter(Instant::class.java,
-            JsonSerializer<Instant> { src, _, _ -> JsonPrimitive(src.toString()) })
-        .registerTypeAdapter(Instant::class.java,
-            JsonDeserializer { json, _, _ -> Instant.parse(json.asString) })
         .registerTypeAdapter(UUID::class.java,
             JsonSerializer<UUID> { src, _, _ -> JsonPrimitive(src.toString()) })
         .registerTypeAdapter(UUID::class.java,
