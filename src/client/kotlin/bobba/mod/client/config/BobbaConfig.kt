@@ -12,6 +12,11 @@ class BobbaConfig : Config() {
 
     @JvmField
     @Expose
+    @Category(name = "Keybinds", desc = "Bind keys to commands or chat messages")
+    var keybinds: KeybindsCategory = KeybindsCategory()
+
+    @JvmField
+    @Expose
     @Category(name = "API", desc = "External API integration settings")
     var api: ApiCategory = ApiCategory()
 
