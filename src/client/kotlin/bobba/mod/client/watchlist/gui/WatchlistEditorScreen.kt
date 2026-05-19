@@ -1,5 +1,6 @@
 package bobba.mod.client.watchlist.gui
 
+import bobba.mod.client.gui.BobbaScreen
 import bobba.mod.client.hypixel.HypixelApi
 import bobba.mod.client.hypixel.HypixelRank
 import bobba.mod.client.watchlist.MojangApi
@@ -13,8 +14,8 @@ import net.minecraft.client.gui.components.EditBox
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.Component
 
-class WatchlistEditorScreen(private val parent: Screen?) :
-    Screen(Component.literal("Watchlist Editor")) {
+class WatchlistEditorScreen(parent: Screen?) :
+    BobbaScreen(Component.literal("Watchlist Editor"), parent) {
 
     companion object {
         private const val MAX_VISIBLE = 12
@@ -25,25 +26,27 @@ class WatchlistEditorScreen(private val parent: Screen?) :
         }
     }
 
+    override val panelWidth: Int = 320
+
     private lateinit var addInput: EditBox
 
     override fun init() {
         val centerX = width / 2
 
-        addInput = EditBox(font, centerX - 100, 36, 160, 20, Component.literal("ign"))
+        addInput = EditBox(font, centerX - 100, panelContentTop, 160, 20, Component.literal("ign"))
         addInput.setHint(Component.literal("Player IGN..."))
         addInput.setMaxLength(16)
         addRenderableWidget(addInput)
 
         addRenderableWidget(
             Button.builder(Component.literal("Add")) { addCurrentInput() }
-                .bounds(centerX + 65, 36, 35, 20)
+                .bounds(centerX + 65, panelContentTop, 35, 20)
                 .build()
         )
 
         val entries = Watchlist.entries.sortedBy { it.ign.lowercase() }
         entries.take(MAX_VISIBLE).forEachIndexed { i, entry ->
-            val y = 70 + i * 22
+            val y = panelContentTop + 30 + i * 22
             addRenderableWidget(
                 Button.builder(Component.literal("X")) {
                     Watchlist.remove(entry.ign)
@@ -52,11 +55,7 @@ class WatchlistEditorScreen(private val parent: Screen?) :
             )
         }
 
-        addRenderableWidget(
-            Button.builder(Component.literal("Done")) { onClose() }
-                .bounds(centerX - 50, height - 30, 100, 20)
-                .build()
-        )
+        addDoneButton()
     }
 
     private fun addCurrentInput() {
@@ -78,19 +77,18 @@ class WatchlistEditorScreen(private val parent: Screen?) :
     override fun render(graphics: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
         super.render(graphics, mouseX, mouseY, delta)
         val centerX = width / 2
-        graphics.drawCenteredString(font, title, centerX, 14, 0xFFFFFFFF.toInt())
 
         val entries = Watchlist.entries.sortedBy { it.ign.lowercase() }
         if (entries.isEmpty()) {
             graphics.drawCenteredString(
                 font,
                 Component.literal("No players on your watchlist."),
-                centerX, 100, 0xFFAAAAAA.toInt()
+                centerX, panelContentTop + 70, 0xFFAAAAAA.toInt()
             )
             return
         }
         entries.take(MAX_VISIBLE).forEachIndexed { i, entry ->
-            val y = 70 + i * 22 + 6
+            val y = panelContentTop + 30 + i * 22 + 6
             val rank = entry.rank ?: HypixelRank.NONE
             val prefix = if (rank.prefix.isNotEmpty()) "${rank.prefix} " else ""
             val nameComponent = Component.literal("$prefix${entry.ign}").withStyle(rank.color)
@@ -104,12 +102,8 @@ class WatchlistEditorScreen(private val parent: Screen?) :
             graphics.drawCenteredString(
                 font,
                 Component.literal("Showing $MAX_VISIBLE of ${entries.size} — use /watchlist list to see all."),
-                centerX, height - 50, 0xFFAAAAAA.toInt()
+                centerX, panelFooterTop - 12, 0xFFAAAAAA.toInt()
             )
         }
-    }
-
-    override fun onClose() {
-        Minecraft.getInstance().setScreen(parent)
     }
 }

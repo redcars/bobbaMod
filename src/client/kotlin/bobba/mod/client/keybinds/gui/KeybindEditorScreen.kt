@@ -1,5 +1,6 @@
 package bobba.mod.client.keybinds.gui
 
+import bobba.mod.client.gui.BobbaScreen
 import bobba.mod.client.keybinds.KeyName
 import bobba.mod.client.keybinds.KeybindEntry
 import bobba.mod.client.keybinds.Keybinds
@@ -12,8 +13,8 @@ import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.input.KeyEvent
 import net.minecraft.network.chat.Component
 
-class KeybindEditorScreen(private val parent: Screen?) :
-    Screen(Component.literal("Keybind Editor")) {
+class KeybindEditorScreen(parent: Screen?) :
+    BobbaScreen(Component.literal("Keybind Editor"), parent) {
 
     companion object {
         private const val MAX_VISIBLE = 10
@@ -29,6 +30,8 @@ class KeybindEditorScreen(private val parent: Screen?) :
         }
     }
 
+    override val panelWidth: Int = 380
+
     private var capturingForIndex: Int? = null
 
     override fun init() {
@@ -37,7 +40,7 @@ class KeybindEditorScreen(private val parent: Screen?) :
         val rowX = width / 2 - rowWidth / 2
 
         entries.take(MAX_VISIBLE).forEachIndexed { i, entry ->
-            val rowY = 50 + i * ROW_HEIGHT
+            val rowY = panelContentTop + i * ROW_HEIGHT
             val keyLabel = if (capturingForIndex == i) "Press a key..." else KeyName.displayName(entry.keyCode)
 
             addRenderableWidget(
@@ -70,7 +73,7 @@ class KeybindEditorScreen(private val parent: Screen?) :
             )
         }
 
-        val addButtonY = 50 + (entries.size.coerceAtMost(MAX_VISIBLE)) * ROW_HEIGHT + 6
+        val addButtonY = panelContentTop + (entries.size.coerceAtMost(MAX_VISIBLE)) * ROW_HEIGHT + 6
         addRenderableWidget(
             Button.builder(Component.literal("+ Add binding")) {
                 Keybinds.add(KeybindEntry(0, ""))
@@ -79,10 +82,7 @@ class KeybindEditorScreen(private val parent: Screen?) :
             }.bounds(width / 2 - 75, addButtonY, 150, 20).build()
         )
 
-        addRenderableWidget(
-            Button.builder(Component.literal("Done")) { onClose() }
-                .bounds(width / 2 - 50, height - 30, 100, 20).build()
-        )
+        addDoneButton()
     }
 
     override fun keyPressed(keyEvent: KeyEvent): Boolean {
@@ -107,26 +107,21 @@ class KeybindEditorScreen(private val parent: Screen?) :
 
     override fun render(graphics: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
         super.render(graphics, mouseX, mouseY, delta)
-        graphics.drawCenteredString(font, title, width / 2, 14, 0xFFFFFFFF.toInt())
 
         val entries = Keybinds.all()
         if (entries.isEmpty()) {
             graphics.drawCenteredString(
                 font,
                 Component.literal("No keybinds yet. Click + Add binding to start."),
-                width / 2, height / 2 - 10, 0xFFAAAAAA.toInt()
+                width / 2, panelContentTop + 40, 0xFFAAAAAA.toInt()
             )
         }
         if (entries.size > MAX_VISIBLE) {
             graphics.drawCenteredString(
                 font,
                 Component.literal("Showing $MAX_VISIBLE of ${entries.size} — use /keybinds list to see all."),
-                width / 2, height - 50, 0xFFAAAAAA.toInt()
+                width / 2, panelFooterTop - 12, 0xFFAAAAAA.toInt()
             )
         }
-    }
-
-    override fun onClose() {
-        Minecraft.getInstance().setScreen(parent)
     }
 }
