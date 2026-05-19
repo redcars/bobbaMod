@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.0](https://github.com/redcars/bobbaMod/compare/v1.0.0...v1.1.0) (2026-05-19)
+
+
+### Features
+
+* keybinds system ([ffa53a5](https://github.com/redcars/bobbaMod/commit/ffa53a56a472fed34a0b22876355414532c30a32))
+* migrate editor screens to BobbaScreen base class ([88c9f9c](https://github.com/redcars/bobbaMod/commit/88c9f9c26fa5aa63a3b1f6e27d547137cf5ec0ce))
+
 ## [1.0.0](https://github.com/redcars/bobbaMod/compare/v1.0.0...v1.0.0) (2026-05-17)
 
 
