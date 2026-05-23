@@ -24,7 +24,7 @@ object KeybindHandler {
                 val isDown = InputConstants.isKeyDown(window, code)
                 val wasDown = pressed[code] ?: false
                 pressed[code] = isDown
-                if (isDown && !wasDown) {
+                if (isDown && !wasDown && entry.isEnabled) {
                     fire(entry.command)
                 }
             }
