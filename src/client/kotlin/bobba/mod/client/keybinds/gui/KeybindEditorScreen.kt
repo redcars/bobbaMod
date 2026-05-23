@@ -5,6 +5,7 @@ import bobba.mod.client.keybinds.KeyName
 import bobba.mod.client.keybinds.KeybindEntry
 import bobba.mod.client.keybinds.Keybinds
 import com.mojang.blaze3d.platform.InputConstants
+import net.minecraft.ChatFormatting
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
@@ -20,7 +21,8 @@ class KeybindEditorScreen(parent: Screen?) :
         private const val MAX_VISIBLE = 10
         private const val ROW_HEIGHT = 24
         private const val KEY_BUTTON_WIDTH = 80
-        private const val COMMAND_FIELD_WIDTH = 220
+        private const val COMMAND_FIELD_WIDTH = 195
+        private const val TOGGLE_BUTTON_WIDTH = 40
         private const val REMOVE_BUTTON_WIDTH = 20
         private const val ROW_GAP = 5
 
@@ -36,7 +38,8 @@ class KeybindEditorScreen(parent: Screen?) :
 
     override fun init() {
         val entries = Keybinds.all()
-        val rowWidth = KEY_BUTTON_WIDTH + ROW_GAP + COMMAND_FIELD_WIDTH + ROW_GAP + REMOVE_BUTTON_WIDTH
+        val rowWidth = KEY_BUTTON_WIDTH + ROW_GAP + COMMAND_FIELD_WIDTH + ROW_GAP +
+            TOGGLE_BUTTON_WIDTH + ROW_GAP + REMOVE_BUTTON_WIDTH
         val rowX = width / 2 - rowWidth / 2
 
         entries.take(MAX_VISIBLE).forEachIndexed { i, entry ->
@@ -63,7 +66,23 @@ class KeybindEditorScreen(parent: Screen?) :
             }
             addRenderableWidget(cmdField)
 
-            val xX = cmdX + COMMAND_FIELD_WIDTH + ROW_GAP
+            val toggleX = cmdX + COMMAND_FIELD_WIDTH + ROW_GAP
+            val toggleLabel = if (entry.isEnabled) {
+                Component.literal("ON").withStyle(ChatFormatting.GREEN)
+            } else {
+                Component.literal("OFF").withStyle(ChatFormatting.RED)
+            }
+            addRenderableWidget(
+                Button.builder(toggleLabel) {
+                    val current = Keybinds.all()
+                    if (i < current.size) {
+                        Keybinds.updateAt(i, current[i].copy(enabled = !current[i].isEnabled))
+                    }
+                    rebuildWidgets()
+                }.bounds(toggleX, rowY, TOGGLE_BUTTON_WIDTH, 20).build()
+            )
+
+            val xX = toggleX + TOGGLE_BUTTON_WIDTH + ROW_GAP
             addRenderableWidget(
                 Button.builder(Component.literal("X")) {
                     Keybinds.removeAt(i)
