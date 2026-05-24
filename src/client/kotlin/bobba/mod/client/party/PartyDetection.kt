@@ -23,7 +23,7 @@ object PartyDetection {
 
     @Suppress("RegExpRedundantEscape")
     private val dungeonJoinRegex = Regex(
-        """^(\[[^\]]+] )?(\w{1,16}) joined the dungeon group[.!]?$"""
+        """^(?:Party Finder\s*>\s*)?(\[[^\]]+] )?(\w{1,16}) (?:has )?joined the dungeon group[.!]?(?:\s+\([^)]*\))?$"""
     )
 
     fun init() {
@@ -34,8 +34,9 @@ object PartyDetection {
 
     fun handleMessage(plainText: String) {
         val trimmed = plainText.trim()
-        val partyMatch = partyJoinRegex.matchEntire(trimmed)
-        val match = partyMatch ?: dungeonJoinRegex.matchEntire(trimmed) ?: return
+        val match = partyJoinRegex.matchEntire(trimmed)
+            ?: dungeonJoinRegex.matchEntire(trimmed)
+            ?: return
         val prefix = match.groupValues[1].ifEmpty { null }
         val ign = match.groupValues[2]
         val parsedRank = prefix?.let { HypixelRank.fromPrefix(it) }
@@ -50,8 +51,9 @@ object PartyDetection {
             Notifier.warn("Watchlisted player joined your party: $ign")
         }
 
-        // Kick suggestion — runs for any party joiner whose rank matches the filters.
-        if (partyMatch != null && ConfigManager.instance.party.autoKickFromParty) {
+        // Kick suggestion — runs for any party / dungeon-group joiner whose rank matches the filters.
+        // Dungeon-group joins are how party-finder additions surface; /party kick works for them too.
+        if (ConfigManager.instance.party.autoKickFromParty) {
             val effectiveRank = parsedRank
                 ?: (if (isWatchlisted) Watchlist.getByIgn(ign)?.rank else null)
                 ?: HypixelRank.NONE
