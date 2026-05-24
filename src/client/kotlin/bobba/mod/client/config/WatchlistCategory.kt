@@ -30,4 +30,13 @@ class WatchlistCategory {
     @ConfigOption(name = "Play sound on warning", desc = "Play a ding sound when a warning fires.")
     @ConfigEditorBoolean
     var playSound: Boolean = true
+
+    @JvmField
+    @Expose
+    @ConfigOption(
+        name = "Auto-kick from party",
+        desc = "Run /party kick automatically when a watchlisted player joins your party. Requires you to be party leader."
+    )
+    @ConfigEditorBoolean
+    var autoKickFromParty: Boolean = false
 }

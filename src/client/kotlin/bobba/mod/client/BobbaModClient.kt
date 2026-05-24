@@ -14,6 +14,7 @@ import bobba.mod.client.watchlist.Watchlist
 import bobba.mod.client.watchlist.WatchlistCommands
 import bobba.mod.client.watchlist.WatchlistRefresher
 import net.fabricmc.api.ClientModInitializer
+import net.fabricmc.loader.api.FabricLoader
 
 object BobbaModClient : ClientModInitializer {
 	override fun onInitializeClient() {
@@ -29,7 +30,7 @@ object BobbaModClient : ClientModInitializer {
 		UpdateChecker.init()
 		KeybindHandler.init()
 
-		if (ConfigManager.instance.about.debugCommands) {
+		if (FabricLoader.getInstance().isDevelopmentEnvironment) {
 			TestPartyCommand.register()
 			TestPresenceCommand.register()
 		}

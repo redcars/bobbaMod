@@ -17,13 +17,4 @@ class AboutCategory {
     @ConfigOption(name = "Check for updates on launch", desc = "Check GitHub for a newer BobbaMod release once per session.")
     @ConfigEditorBoolean
     var checkForUpdates: Boolean = true
-
-    @JvmField
-    @Expose
-    @ConfigOption(
-        name = "Enable debug commands",
-        desc = "Register /testparty and /testpresence for simulating events. Requires a restart to take effect."
-    )
-    @ConfigEditorBoolean
-    var debugCommands: Boolean = false
 }

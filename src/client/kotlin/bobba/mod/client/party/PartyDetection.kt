@@ -5,6 +5,7 @@ import bobba.mod.client.hypixel.HypixelRank
 import bobba.mod.client.notify.Notifier
 import bobba.mod.client.watchlist.Watchlist
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
+import net.minecraft.client.Minecraft
 
 object PartyDetection {
     private val partyJoinRegex = Regex(
@@ -23,9 +24,8 @@ object PartyDetection {
 
     fun handleMessage(plainText: String) {
         val trimmed = plainText.trim()
-        val match = partyJoinRegex.matchEntire(trimmed)
-            ?: dungeonJoinRegex.matchEntire(trimmed)
-            ?: return
+        val partyMatch = partyJoinRegex.matchEntire(trimmed)
+        val match = partyMatch ?: dungeonJoinRegex.matchEntire(trimmed) ?: return
         val prefix = match.groupValues[1].ifEmpty { null }
         val ign = match.groupValues[2]
 
@@ -33,8 +33,21 @@ object PartyDetection {
             HypixelRank.fromPrefix(prefix)?.let { Watchlist.attachRankByIgn(ign, it) }
         }
 
-        if (!ConfigManager.instance.watchlist.warnOnPartyJoin) return
         if (!Watchlist.contains(ign)) return
-        Notifier.warn("Watchlisted player joined your party: $ign")
+
+        if (ConfigManager.instance.watchlist.warnOnPartyJoin) {
+            Notifier.warn("Watchlisted player joined your party: $ign")
+        }
+
+        if (partyMatch != null && ConfigManager.instance.watchlist.autoKickFromParty) {
+            runKick(ign)
+        }
+    }
+
+    private fun runKick(ign: String) {
+        val mc = Minecraft.getInstance()
+        mc.execute {
+            mc.player?.connection?.sendCommand("party kick $ign")
+        }
     }
 }
