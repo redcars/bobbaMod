@@ -7,6 +7,8 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorButton
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 
 class WatchlistCategory {
+    // Discovered by MoulConfig via reflection; the IDE can't see the usage.
+    @Suppress("unused")
     @JvmField
     @Expose(serialize = false, deserialize = false)
     @ConfigOption(name = "Manage watchlist", desc = "Open the editor to add or remove watched players.")
@@ -30,13 +32,4 @@ class WatchlistCategory {
     @ConfigOption(name = "Play sound on warning", desc = "Play a ding sound when a warning fires.")
     @ConfigEditorBoolean
     var playSound: Boolean = true
-
-    @JvmField
-    @Expose
-    @ConfigOption(
-        name = "Auto-kick from party",
-        desc = "Run /party kick automatically when a watchlisted player joins your party. Requires you to be party leader."
-    )
-    @ConfigEditorBoolean
-    var autoKickFromParty: Boolean = false
 }

@@ -1,19 +1,29 @@
 package bobba.mod.client.party
 
+import bobba.mod.client.config.AutoKickFilters
 import bobba.mod.client.config.ConfigManager
 import bobba.mod.client.hypixel.HypixelRank
 import bobba.mod.client.notify.Notifier
 import bobba.mod.client.watchlist.Watchlist
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
+import net.minecraft.ChatFormatting
 import net.minecraft.client.Minecraft
+import net.minecraft.network.chat.ClickEvent
+import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.HoverEvent
+import net.minecraft.network.chat.Style
 
 object PartyDetection {
+    // `\]` inside the character class is required by Java's regex grammar;
+    // IntelliJ flags it as redundant anyway, so we suppress.
+    @Suppress("RegExpRedundantEscape")
     private val partyJoinRegex = Regex(
-        """^(?:Party\s*>\s*)?(\[[^\]]+\] )?(\w{1,16}) (?:has )?joined (?:the |your )?party[.!]?$"""
+        """^(?:Party\s*>\s*)?(\[[^\]]+] )?(\w{1,16}) (?:has )?joined (?:the |your )?party[.!]?$"""
     )
 
+    @Suppress("RegExpRedundantEscape")
     private val dungeonJoinRegex = Regex(
-        """^(\[[^\]]+\] )?(\w{1,16}) joined the dungeon group[.!]?$"""
+        """^(\[[^\]]+] )?(\w{1,16}) joined the dungeon group[.!]?$"""
     )
 
     fun init() {
@@ -28,26 +38,62 @@ object PartyDetection {
         val match = partyMatch ?: dungeonJoinRegex.matchEntire(trimmed) ?: return
         val prefix = match.groupValues[1].ifEmpty { null }
         val ign = match.groupValues[2]
+        val parsedRank = prefix?.let { HypixelRank.fromPrefix(it) }
 
-        if (Watchlist.contains(ign) && prefix != null) {
-            HypixelRank.fromPrefix(prefix)?.let { Watchlist.attachRankByIgn(ign, it) }
+        val isWatchlisted = Watchlist.contains(ign)
+        if (isWatchlisted && parsedRank != null) {
+            Watchlist.attachRankByIgn(ign, parsedRank)
         }
 
-        if (!Watchlist.contains(ign)) return
-
-        if (ConfigManager.instance.watchlist.warnOnPartyJoin) {
+        // Watchlist warning — only fires for watchlisted players.
+        if (isWatchlisted && ConfigManager.instance.watchlist.warnOnPartyJoin) {
             Notifier.warn("Watchlisted player joined your party: $ign")
         }
 
-        if (partyMatch != null && ConfigManager.instance.watchlist.autoKickFromParty) {
-            runKick(ign)
+        // Kick suggestion — runs for any party joiner whose rank matches the filters.
+        if (partyMatch != null && ConfigManager.instance.party.autoKickFromParty) {
+            val effectiveRank = parsedRank
+                ?: (if (isWatchlisted) Watchlist.getByIgn(ign)?.rank else null)
+                ?: HypixelRank.NONE
+            if (shouldKickRank(effectiveRank, ConfigManager.instance.party.autoKickFilters)) {
+                suggestKick(ign, effectiveRank)
+            }
         }
     }
 
-    private fun runKick(ign: String) {
+    private fun shouldKickRank(rank: HypixelRank, filters: AutoKickFilters): Boolean = when (rank) {
+        HypixelRank.NONE -> filters.kickUnranked
+        HypixelRank.VIP -> filters.kickVip
+        HypixelRank.VIP_PLUS -> filters.kickVipPlus
+        HypixelRank.MVP -> filters.kickMvp
+        HypixelRank.MVP_PLUS -> filters.kickMvpPlus
+        HypixelRank.MVP_PLUS_PLUS -> filters.kickMvpPlusPlus
+        HypixelRank.YOUTUBE,
+        HypixelRank.HELPER,
+        HypixelRank.MODERATOR,
+        HypixelRank.GAME_MASTER,
+        HypixelRank.ADMIN,
+        HypixelRank.OWNER -> false
+    }
+
+    private fun suggestKick(ign: String, rank: HypixelRank) {
         val mc = Minecraft.getInstance()
         mc.execute {
-            mc.player?.connection?.sendCommand("party kick $ign")
+            val rankLabel = if (rank.prefix.isNotEmpty()) "${rank.prefix} " else ""
+            val nameComponent = Component.literal("$rankLabel$ign").withStyle(rank.color)
+            val clickable = Component.literal("[Click to kick]").withStyle(
+                Style.EMPTY
+                    .withColor(ChatFormatting.RED)
+                    .withUnderlined(true)
+                    .withClickEvent(ClickEvent.RunCommand("/party kick $ign"))
+                    .withHoverEvent(HoverEvent.ShowText(Component.literal("Run /party kick $ign")))
+            )
+            mc.gui.chat.addMessage(
+                Component.literal("[BobbaMod] ").withStyle(ChatFormatting.GOLD)
+                    .append(nameComponent)
+                    .append(Component.literal(" joined — ").withStyle(ChatFormatting.YELLOW))
+                    .append(clickable)
+            )
         }
     }
 }
