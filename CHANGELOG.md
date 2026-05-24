@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.2.0](https://github.com/redcars/bobbaMod/compare/v1.1.0...v1.2.0) (2026-05-24)
+
+
+### Features
+
+* add auto-kick for watchlisted party members ([99c8c1e](https://github.com/redcars/bobbaMod/commit/99c8c1e3528767adcde87ff74dad151ac73526f0))
+* add enabled toggle support and editor ([dff7ec0](https://github.com/redcars/bobbaMod/commit/dff7ec04ed85a9b2274dfa48580e8adde6775074))
+* add party auto-kick filter configuration ([60aba8e](https://github.com/redcars/bobbaMod/commit/60aba8ec583ca078b5c8d8436ed94b2c94a955d4))
+* add preset support to keybind system ([6f934c3](https://github.com/redcars/bobbaMod/commit/6f934c379f40feb7ded2dabea650ddb3ad4126a3))
+
 ## [1.1.0](https://github.com/redcars/bobbaMod/compare/v1.0.0...v1.1.0) (2026-05-19)
 
 
