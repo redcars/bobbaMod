@@ -11,14 +11,23 @@ object TestPartyCommand {
     fun register() {
         ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
             dispatcher.register(
-                literal("testparty").then(
-                    literal("join").then(
-                        argument("ign", StringArgumentType.word()).executes { ctx ->
-                            simulateJoin(StringArgumentType.getString(ctx, "ign"))
-                            1
-                        }
+                literal("testparty")
+                    .then(
+                        literal("join").then(
+                            argument("ign", StringArgumentType.word()).executes { ctx ->
+                                simulateJoin(StringArgumentType.getString(ctx, "ign"))
+                                1
+                            }
+                        )
                     )
-                )
+                    .then(
+                        literal("finder").then(
+                            argument("ign", StringArgumentType.word()).executes { ctx ->
+                                simulateFinderJoin(StringArgumentType.getString(ctx, "ign"))
+                                1
+                            }
+                        )
+                    )
             )
         }
     }
@@ -26,6 +35,16 @@ object TestPartyCommand {
     private fun simulateJoin(ign: String) {
         val fake = "[MVP+] $ign joined the party."
         Minecraft.getInstance().gui.chat.addServerSystemMessage(Component.literal(fake))
+        PartyDetection.handleMessage(fake)
+    }
+
+    // Party Finder joins carry no [RANK] text; the aqua § code on the name is the rank signal,
+    // matching how Hypixel formats the real message.
+    private fun simulateFinderJoin(ign: String) {
+        val fake = Component.literal(
+            "§dParty Finder §f> §b$ign §ejoined the dungeon group! (§bArcher Level 9§e)"
+        )
+        Minecraft.getInstance().gui.chat.addServerSystemMessage(fake)
         PartyDetection.handleMessage(fake)
     }
 }
