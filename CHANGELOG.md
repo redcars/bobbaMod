@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.0.0](https://github.com/redcars/bobbaMod/compare/v1.2.0...v2.0.0) (2026-07-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* requires Minecraft 26.1.x and Java 25; 1.21.11 support continues on the 1.21.11 branch.
+
+### Features
+
+* add chat right-click actions for watchlist ([ccdd3ec](https://github.com/redcars/bobbaMod/commit/ccdd3ec829ef98d896b7bae00c36bd0e35a62889))
+* port to Minecraft 26.1.2 ([794d38f](https://github.com/redcars/bobbaMod/commit/794d38f2689c3b08965cf51f5ecd863566661036))
+
+
+### Bug Fixes
+
+* normalize whitespace in PartyDetection ([ee00224](https://github.com/redcars/bobbaMod/commit/ee002243659086ae6edfc5c7d098b6e10307bea8))
+
 ## [1.2.0](https://github.com/redcars/bobbaMod/compare/v1.1.0...v1.2.0) (2026-05-24)
 
 
