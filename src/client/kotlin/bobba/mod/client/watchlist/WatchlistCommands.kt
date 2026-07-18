@@ -32,6 +32,20 @@ object WatchlistCommands {
                         )
                     )
                     .then(
+                        literal("note").then(
+                            argument("ign", StringArgumentType.word()).then(
+                                argument("text", StringArgumentType.greedyString()).executes { ctx ->
+                                    handleNote(
+                                        ctx.source,
+                                        StringArgumentType.getString(ctx, "ign"),
+                                        StringArgumentType.getString(ctx, "text")
+                                    )
+                                    1
+                                }
+                            )
+                        )
+                    )
+                    .then(
                         literal("list").executes { ctx ->
                             handleList(ctx.source)
                             1
@@ -41,7 +55,20 @@ object WatchlistCommands {
         }
     }
 
-    private fun handleAdd(source: FabricClientCommandSource, ign: String) {
+    private fun handleNote(source: FabricClientCommandSource, ign: String, text: String) {
+        val entry = Watchlist.getByIgn(ign)
+        if (entry == null) {
+            source.sendError(Component.literal("$ign is not on your watchlist.").withStyle(ChatFormatting.RED))
+            return
+        }
+        Watchlist.setNote(ign, text)
+        source.sendFeedback(
+            Component.literal("Note set for ${entry.ign}: ").withStyle(ChatFormatting.GREEN)
+                .append(Component.literal(text.trim()).withStyle(ChatFormatting.WHITE))
+        )
+    }
+
+private fun handleAdd(source: FabricClientCommandSource, ign: String) {
         if (!Watchlist.add(WatchlistEntry(ign = ign))) {
             source.sendError(Component.literal("$ign is already on your watchlist.").withStyle(ChatFormatting.RED))
             return
@@ -80,6 +107,9 @@ object WatchlistCommands {
             val line = Component.literal(" - ").withStyle(ChatFormatting.WHITE).append(nameComponent)
             if (entry.uuid == null) {
                 line.append(Component.literal(" (pending)").withStyle(ChatFormatting.GRAY))
+            }
+            entry.note?.takeIf { it.isNotBlank() }?.let { note ->
+                line.append(Component.literal(" — $note").withStyle(ChatFormatting.ITALIC))
             }
             source.sendFeedback(line)
         }

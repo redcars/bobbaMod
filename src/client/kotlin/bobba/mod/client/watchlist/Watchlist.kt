@@ -56,6 +56,14 @@ object Watchlist {
         save()
     }
 
+    fun setNote(ign: String, note: String?) {
+        val existing = getByIgn(ign) ?: return
+        val normalized = note?.trim()?.takeIf { it.isNotEmpty() }
+        if (existing.note == normalized) return
+        byIgn[existing.ign.lowercase()] = existing.copy(note = normalized)
+        save()
+    }
+
     fun renameByUuid(uuid: UUID, newIgn: String): Boolean {
         val existing = getByUuid(uuid) ?: return false
         if (existing.ign.equals(newIgn, ignoreCase = true)) return false

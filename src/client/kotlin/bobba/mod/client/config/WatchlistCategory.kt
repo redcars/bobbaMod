@@ -32,4 +32,13 @@ class WatchlistCategory {
     @ConfigOption(name = "Play sound on warning", desc = "Play a ding sound when a warning fires.")
     @ConfigEditorBoolean
     var playSound: Boolean = true
+
+    @JvmField
+    @Expose
+    @ConfigOption(
+        name = "Right-click chat to add",
+        desc = "Right-click a player's name in chat to open a popup that adds them to the watchlist. No effect on chat lines that don't carry a player name."
+    )
+    @ConfigEditorBoolean
+    var rightClickContextMenu: Boolean = true
 }

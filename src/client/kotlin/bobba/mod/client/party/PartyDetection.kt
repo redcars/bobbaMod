@@ -42,22 +42,27 @@ object PartyDetection {
         val parsedRank = prefix?.let { HypixelRank.fromPrefix(it) }
 
         val isWatchlisted = Watchlist.contains(ign)
+        val watchlistEntry = if (isWatchlisted) Watchlist.getByIgn(ign) else null
         if (isWatchlisted && parsedRank != null) {
             Watchlist.attachRankByIgn(ign, parsedRank)
         }
 
         // Watchlist warning — only fires for watchlisted players.
         if (isWatchlisted && ConfigManager.instance.watchlist.warnOnPartyJoin) {
-            Notifier.warn("Watchlisted player joined your party: $ign")
+            val note = watchlistEntry?.note?.takeIf { it.isNotBlank() }
+            val noteSuffix = note?.let { " — $it" } ?: ""
+            Notifier.warn("Watchlisted player joined your party: $ign$noteSuffix")
         }
 
         // Kick suggestion — runs for any party / dungeon-group joiner whose rank matches the filters.
+        // Watchlisted players bypass the rank filters entirely (still gated by the master toggle).
         // Dungeon-group joins are how party-finder additions surface; /party kick works for them too.
         if (ConfigManager.instance.party.autoKickFromParty) {
             val effectiveRank = parsedRank
-                ?: (if (isWatchlisted) Watchlist.getByIgn(ign)?.rank else null)
+                ?: watchlistEntry?.rank
                 ?: HypixelRank.NONE
-            if (shouldKickRank(effectiveRank, ConfigManager.instance.party.autoKickFilters)) {
+            val rankAllows = shouldKickRank(effectiveRank, ConfigManager.instance.party.autoKickFilters)
+            if (rankAllows || isWatchlisted) {
                 suggestKick(ign, effectiveRank)
             }
         }

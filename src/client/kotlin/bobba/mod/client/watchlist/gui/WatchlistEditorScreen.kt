@@ -18,7 +18,13 @@ class WatchlistEditorScreen(parent: Screen?) :
     BobbaScreen(Component.literal("Watchlist Editor"), parent) {
 
     companion object {
-        private const val MAX_VISIBLE = 12
+        private const val MAX_VISIBLE = 10
+        private const val ROW_HEIGHT = 24
+
+        private const val IGN_WIDTH = 140
+        private const val NOTE_WIDTH = 240
+        private const val REMOVE_BUTTON_WIDTH = 20
+        private const val ROW_GAP = 5
 
         fun open() {
             val mc = Minecraft.getInstance()
@@ -26,9 +32,13 @@ class WatchlistEditorScreen(parent: Screen?) :
         }
     }
 
-    override val panelWidth: Int = 320
+    override val panelWidth: Int = 440
 
     private lateinit var addInput: EditBox
+
+    private val rowWidth get() = IGN_WIDTH + ROW_GAP + NOTE_WIDTH + ROW_GAP + REMOVE_BUTTON_WIDTH
+
+    private val rowX get() = width / 2 - rowWidth / 2
 
     override fun init() {
         val centerX = width / 2
@@ -46,12 +56,22 @@ class WatchlistEditorScreen(parent: Screen?) :
 
         val entries = Watchlist.entries.sortedBy { it.ign.lowercase() }
         entries.take(MAX_VISIBLE).forEachIndexed { i, entry ->
-            val y = panelContentTop + 30 + i * 22
+            val rowY = panelContentTop + 30 + i * ROW_HEIGHT
+            val noteX = rowX + IGN_WIDTH + ROW_GAP
+
+            val noteField = EditBox(font, noteX, rowY, NOTE_WIDTH, 20, Component.empty())
+            noteField.setMaxLength(128)
+            noteField.value = entry.note ?: ""
+            noteField.setHint(Component.literal("note..."))
+            noteField.setResponder { newVal -> Watchlist.setNote(entry.ign, newVal) }
+            addRenderableWidget(noteField)
+
+            val xX = noteX + NOTE_WIDTH + ROW_GAP
             addRenderableWidget(
                 Button.builder(Component.literal("X")) {
                     Watchlist.remove(entry.ign)
                     rebuildWidgets()
-                }.bounds(centerX + 65, y, 20, 20).build()
+                }.bounds(xX, rowY, REMOVE_BUTTON_WIDTH, 20).build()
             )
         }
 
@@ -76,19 +96,18 @@ class WatchlistEditorScreen(parent: Screen?) :
 
     override fun render(graphics: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
         super.render(graphics, mouseX, mouseY, delta)
-        val centerX = width / 2
 
         val entries = Watchlist.entries.sortedBy { it.ign.lowercase() }
         if (entries.isEmpty()) {
             graphics.drawCenteredString(
                 font,
                 Component.literal("No players on your watchlist."),
-                centerX, panelContentTop + 70, 0xFFAAAAAA.toInt()
+                width / 2, panelContentTop + 70, 0xFFAAAAAA.toInt()
             )
             return
         }
         entries.take(MAX_VISIBLE).forEachIndexed { i, entry ->
-            val y = panelContentTop + 30 + i * 22 + 6
+            val rowY = panelContentTop + 30 + i * ROW_HEIGHT + 6
             val rank = entry.rank ?: HypixelRank.NONE
             val prefix = if (rank.prefix.isNotEmpty()) "${rank.prefix} " else ""
             val nameComponent = Component.literal("$prefix${entry.ign}").withStyle(rank.color)
@@ -96,13 +115,13 @@ class WatchlistEditorScreen(parent: Screen?) :
             if (entry.uuid == null) {
                 line.append(Component.literal(" (pending)").withStyle(ChatFormatting.GRAY))
             }
-            graphics.drawString(font, line, centerX - 100, y, 0xFFFFFFFF.toInt())
+            graphics.drawString(font, line, rowX, rowY, 0xFFFFFFFF.toInt())
         }
         if (entries.size > MAX_VISIBLE) {
             graphics.drawCenteredString(
                 font,
                 Component.literal("Showing $MAX_VISIBLE of ${entries.size} — use /watchlist list to see all."),
-                centerX, panelFooterTop - 12, 0xFFAAAAAA.toInt()
+                width / 2, panelFooterTop - 12, 0xFFAAAAAA.toInt()
             )
         }
     }
