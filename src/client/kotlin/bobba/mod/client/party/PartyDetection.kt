@@ -95,7 +95,7 @@ object PartyDetection {
                     .withClickEvent(ClickEvent.RunCommand("/party kick $ign"))
                     .withHoverEvent(HoverEvent.ShowText(Component.literal("Run /party kick $ign")))
             )
-            mc.gui.chat.addMessage(
+            mc.gui.chat.addClientSystemMessage(
                 Component.literal("[BobbaMod] ").withStyle(ChatFormatting.GOLD)
                     .append(nameComponent)
                     .append(Component.literal(" joined — ").withStyle(ChatFormatting.YELLOW))

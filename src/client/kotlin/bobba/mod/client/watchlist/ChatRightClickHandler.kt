@@ -5,6 +5,7 @@ import bobba.mod.client.watchlist.gui.ChatActionsScreen
 import net.minecraft.ChatFormatting
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ActiveTextCollector
+import net.minecraft.client.gui.components.ChatComponent
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
@@ -17,12 +18,12 @@ object ChatRightClickHandler {
         val mc = Minecraft.getInstance()
         val font = mc.font
         val finder = ActiveTextCollector.ClickableStyleFinder(font, mouseX.toInt(), mouseY.toInt())
-        mc.gui.chat.captureClickableText(finder, mouseX.toInt(), mouseY.toInt(), false)
+        mc.gui.chat.captureClickableText(finder, mouseX.toInt(), mouseY.toInt(), ChatComponent.DisplayMode.FOREGROUND)
         val style = finder.result() ?: return false
         val ign = extractIgn(style) ?: return false
 
         if (Watchlist.contains(ign)) {
-            mc.gui.chat.addMessage(
+            mc.gui.chat.addClientSystemMessage(
                 Component.literal("[BobbaMod] ").withStyle(ChatFormatting.GOLD)
                     .append(Component.literal("$ign is already on your watchlist.").withStyle(ChatFormatting.YELLOW))
             )

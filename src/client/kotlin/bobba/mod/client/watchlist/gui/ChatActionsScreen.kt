@@ -6,7 +6,7 @@ import bobba.mod.client.watchlist.MojangApi
 import bobba.mod.client.watchlist.Watchlist
 import bobba.mod.client.watchlist.WatchlistEntry
 import net.minecraft.ChatFormatting
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.Component
@@ -44,9 +44,9 @@ class ChatActionsScreen(parent: Screen?, private val ign: String) :
         }
     }
 
-    override fun render(graphics: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
-        super.render(graphics, mouseX, mouseY, delta)
-        graphics.drawCenteredString(
+    override fun extractRenderState(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
+        super.extractRenderState(graphics, mouseX, mouseY, delta)
+        graphics.centeredText(
             font,
             Component.literal("Add ").withStyle(ChatFormatting.WHITE)
                 .append(Component.literal(ign).withStyle(ChatFormatting.AQUA))

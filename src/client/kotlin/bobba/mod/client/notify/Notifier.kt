@@ -11,7 +11,7 @@ object Notifier {
     fun warn(text: String) {
         val mc = Minecraft.getInstance()
         mc.execute {
-            mc.gui.chat.addMessage(
+            mc.gui.chat.addClientSystemMessage(
                 Component.literal("[BobbaMod] ").withStyle(ChatFormatting.GOLD)
                     .append(Component.literal(text).withStyle(ChatFormatting.YELLOW))
             )

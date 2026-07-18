@@ -8,7 +8,7 @@ import bobba.mod.client.watchlist.Watchlist
 import bobba.mod.client.watchlist.WatchlistEntry
 import net.minecraft.ChatFormatting
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.EditBox
 import net.minecraft.client.gui.screens.Screen
@@ -94,12 +94,12 @@ class WatchlistEditorScreen(parent: Screen?) :
         rebuildWidgets()
     }
 
-    override fun render(graphics: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
-        super.render(graphics, mouseX, mouseY, delta)
+    override fun extractRenderState(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
+        super.extractRenderState(graphics, mouseX, mouseY, delta)
 
         val entries = Watchlist.entries.sortedBy { it.ign.lowercase() }
         if (entries.isEmpty()) {
-            graphics.drawCenteredString(
+            graphics.centeredText(
                 font,
                 Component.literal("No players on your watchlist."),
                 width / 2, panelContentTop + 70, 0xFFAAAAAA.toInt()
@@ -115,10 +115,10 @@ class WatchlistEditorScreen(parent: Screen?) :
             if (entry.uuid == null) {
                 line.append(Component.literal(" (pending)").withStyle(ChatFormatting.GRAY))
             }
-            graphics.drawString(font, line, rowX, rowY, 0xFFFFFFFF.toInt())
+            graphics.text(font, line, rowX, rowY, 0xFFFFFFFF.toInt())
         }
         if (entries.size > MAX_VISIBLE) {
-            graphics.drawCenteredString(
+            graphics.centeredText(
                 font,
                 Component.literal("Showing $MAX_VISIBLE of ${entries.size} — use /watchlist list to see all."),
                 width / 2, panelFooterTop - 12, 0xFFAAAAAA.toInt()

@@ -1,7 +1,7 @@
 package bobba.mod.client.gui
 
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.Component
@@ -36,8 +36,8 @@ abstract class BobbaScreen(
     /** Y coordinate where the bottom "Done" row sits. */
     protected val panelFooterTop: Int get() = panelBottom - 28
 
-    override fun renderBackground(graphics: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
-        super.renderBackground(graphics, mouseX, mouseY, delta)
+    override fun extractBackground(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
+        super.extractBackground(graphics, mouseX, mouseY, delta)
         graphics.fill(0, 0, width, height, OVERLAY_COLOR)
         graphics.fill(panelLeft, panelTop, panelRight, panelBottom, PANEL_COLOR)
         graphics.fill(panelLeft - 1, panelTop - 1, panelRight + 1, panelTop, BORDER_COLOR)
@@ -46,9 +46,9 @@ abstract class BobbaScreen(
         graphics.fill(panelRight, panelTop - 1, panelRight + 1, panelBottom + 1, BORDER_COLOR)
     }
 
-    override fun render(graphics: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
-        super.render(graphics, mouseX, mouseY, delta)
-        graphics.drawCenteredString(font, title, width / 2, panelTop + 9, TITLE_COLOR)
+    override fun extractRenderState(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
+        super.extractRenderState(graphics, mouseX, mouseY, delta)
+        graphics.centeredText(font, title, width / 2, panelTop + 9, TITLE_COLOR)
     }
 
     override fun onClose() {

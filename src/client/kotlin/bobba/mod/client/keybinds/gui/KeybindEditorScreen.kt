@@ -7,7 +7,7 @@ import bobba.mod.client.keybinds.Keybinds
 import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.ChatFormatting
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.EditBox
 import net.minecraft.client.gui.screens.Screen
@@ -197,25 +197,25 @@ class KeybindEditorScreen(parent: Screen?) :
         return super.keyPressed(keyEvent)
     }
 
-    override fun render(graphics: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
-        super.render(graphics, mouseX, mouseY, delta)
+    override fun extractRenderState(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
+        super.extractRenderState(graphics, mouseX, mouseY, delta)
 
         // Divider line between keybind column and presets column
         graphics.fill(dividerX, panelContentTop - 4, dividerX + 1, panelFooterTop - 4, 0xFF606060.toInt())
 
         // Section header for presets
-        graphics.drawString(font, "Presets", presetsLeft, panelTop + 14, 0xFFFFFFFF.toInt(), true)
+        graphics.text(font, "Presets", presetsLeft, panelTop + 14, 0xFFFFFFFF.toInt(), true)
 
         val entries = Keybinds.all()
         if (entries.isEmpty()) {
-            graphics.drawCenteredString(
+            graphics.centeredText(
                 font,
                 Component.literal("No keybinds in this preset."),
                 leftSectionCenter, panelContentTop + 40, 0xFFAAAAAA.toInt()
             )
         }
         if (entries.size > MAX_VISIBLE) {
-            graphics.drawCenteredString(
+            graphics.centeredText(
                 font,
                 Component.literal("Showing $MAX_VISIBLE of ${entries.size}."),
                 leftSectionCenter, panelFooterTop - 12, 0xFFAAAAAA.toInt()
