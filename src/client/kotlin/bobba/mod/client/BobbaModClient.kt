@@ -9,6 +9,9 @@ import bobba.mod.client.party.PartyDetection
 import bobba.mod.client.party.TestPartyCommand
 import bobba.mod.client.presence.ServerPresenceDetection
 import bobba.mod.client.presence.TestPresenceCommand
+import bobba.mod.client.skyblock.AutoPresetSwitcher
+import bobba.mod.client.skyblock.SkyblockLocation
+import bobba.mod.client.skyblock.TestIslandCommand
 import bobba.mod.client.update.UpdateChecker
 import bobba.mod.client.watchlist.Watchlist
 import bobba.mod.client.watchlist.WatchlistCommands
@@ -29,10 +32,13 @@ object BobbaModClient : ClientModInitializer {
 		WatchlistRefresher.init()
 		UpdateChecker.init()
 		KeybindHandler.init()
+		AutoPresetSwitcher.init()
+		SkyblockLocation.init()
 
 		if (FabricLoader.getInstance().isDevelopmentEnvironment) {
 			TestPartyCommand.register()
 			TestPresenceCommand.register()
+			TestIslandCommand.register()
 		}
 	}
 }

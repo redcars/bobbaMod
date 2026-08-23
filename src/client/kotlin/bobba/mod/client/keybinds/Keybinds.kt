@@ -14,6 +14,10 @@ object Keybinds {
             data = data.copy(active = data.presets.first().name)
             save()
         }
+        if (data.defaultPreset != null && data.presets.none { it.name == data.defaultPreset }) {
+            data.defaultPreset = null
+            save()
+        }
     }
 
     fun save() = KeybindsStorage.save(data)
@@ -49,8 +53,49 @@ object Keybinds {
         if (data.active == name) {
             data = data.copy(active = data.presets.first().name)
         }
+        if (data.defaultPreset == name) {
+            data.defaultPreset = null
+        }
         save()
         return true
+    }
+
+    // --- Auto-swap (island → preset) ---
+
+    fun isAutoSwapEnabled(): Boolean = data.autoSwap
+
+    fun setAutoSwap(enabled: Boolean) {
+        if (data.autoSwap == enabled) return
+        data.autoSwap = enabled
+        save()
+    }
+
+    fun defaultPreset(): String? = data.defaultPreset
+
+    fun setDefaultPreset(name: String?) {
+        if (name != null && data.presets.none { it.name == name }) return
+        if (data.defaultPreset == name) return
+        data.defaultPreset = name
+        save()
+    }
+
+    /** The preset an island is mapped to, or null if unmapped. */
+    fun presetForIsland(islandId: String): String? =
+        data.presets.firstOrNull { islandId in it.islands }?.name
+
+    /** Maps an island to a preset, removing it from any other preset so each island maps to one. */
+    fun assignIsland(islandId: String, presetName: String): Boolean {
+        val target = data.presets.firstOrNull { it.name == presetName } ?: return false
+        data.presets.forEach { if (it !== target) it.islands.remove(islandId) }
+        target.islands.add(islandId)
+        save()
+        return true
+    }
+
+    fun unassignIsland(islandId: String) {
+        var changed = false
+        data.presets.forEach { if (it.islands.remove(islandId)) changed = true }
+        if (changed) save()
     }
 
     // --- Keybinds (active preset) ---
