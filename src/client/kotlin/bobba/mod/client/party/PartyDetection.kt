@@ -44,6 +44,12 @@ object PartyDetection {
             ?: dungeonJoinRegex.matchEntire(trimmed)
             ?: return
         val ign = match.groupValues[1]
+
+        // Party Finder prints your own dungeon-group join line to the whole group;
+        // never warn/kick/quick-kick yourself.
+        val selfName = Minecraft.getInstance().player?.gameProfile?.name
+        if (selfName != null && ign.equals(selfName, ignoreCase = true)) return
+
         val config = ConfigManager.instance
         val entry = Watchlist.getByIgn(ign)
 
@@ -69,7 +75,7 @@ object PartyDetection {
             connection.sendCommand("party kick $ign")
             mc.gui.chat.addClientSystemMessage(
                 Component.literal("[BobbaMod] ").withStyle(ChatFormatting.GOLD)
-                    .append(Component.literal("Auto-kicked watchlisted player: $ign").withStyle(ChatFormatting.RED))
+                    .append(Component.literal("Sent /party kick for watchlisted player: $ign").withStyle(ChatFormatting.RED))
             )
         }
     }
