@@ -1,5 +1,30 @@
 # Changelog
 
+## [3.0.0](https://github.com/redcars/bobbaMod/compare/v2.0.0...v3.0.0) (2026-08-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* replace party rank-kick with watchlist auto-kick
+
+### Features
+
+* add Party config category with quick-kick button ([7ff4633](https://github.com/redcars/bobbaMod/commit/7ff4633d352141d21100c0898d131a0c5ea42caf))
+* allow an optional note in /watchlist add ([a1731bf](https://github.com/redcars/bobbaMod/commit/a1731bf6ce60b81fb94f5d23644d13fd46004165))
+* auto-swap keybind presets based on SkyBlock island ([52fbb69](https://github.com/redcars/bobbaMod/commit/52fbb695ce482e4f4e6eac7ff60c23f42270fe43))
+* auto-swap keybind presets based on SkyBlock island ([194996b](https://github.com/redcars/bobbaMod/commit/194996b8a3575fea930e86f558c326a73f7807bf))
+* infer rank from name color for party-finder joins ([531da83](https://github.com/redcars/bobbaMod/commit/531da8306d6261fda465e52a15bf6b7839f5b74c))
+* replace party rank-kick with watchlist auto-kick ([045ac58](https://github.com/redcars/bobbaMod/commit/045ac5821de76a663e3dc37cf71cedcee9619523))
+
+
+### Bug Fixes
+
+* address auto-kick watchlist review findings ([69c3013](https://github.com/redcars/bobbaMod/commit/69c301341437c8e4356480b5bac6bae0c51e6340))
+* address PR [#11](https://github.com/redcars/bobbaMod/issues/11) review findings for island preset auto-swap ([416dd74](https://github.com/redcars/bobbaMod/commit/416dd749db14636a2d857b2c802e8f260ad9410a))
+* fire every keybind sharing a key; harden grace window ([88e0f85](https://github.com/redcars/bobbaMod/commit/88e0f85c5c6d5e8726b4de74d6c1421bf6d46408))
+* prevent keybind leak when closing chat/screens ([544cdfc](https://github.com/redcars/bobbaMod/commit/544cdfc93750a7fbd91a167a4afc14e0aa07d43c))
+* prevent keybind leak when closing chat/screens ([7be89cd](https://github.com/redcars/bobbaMod/commit/7be89cd25e0fc237d522a0a1c1c248a8e3623693))
+
 ## [2.0.0](https://github.com/redcars/bobbaMod/compare/v1.2.0...v2.0.0) (2026-07-18)
 
 
