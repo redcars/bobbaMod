@@ -17,10 +17,21 @@ object WatchlistCommands {
                 literal("watchlist")
                     .then(
                         literal("add").then(
-                            argument("ign", StringArgumentType.word()).executes { ctx ->
-                                handleAdd(ctx.source, StringArgumentType.getString(ctx, "ign"))
-                                1
-                            }
+                            argument("ign", StringArgumentType.word())
+                                .executes { ctx ->
+                                    handleAdd(ctx.source, StringArgumentType.getString(ctx, "ign"), null)
+                                    1
+                                }
+                                .then(
+                                    argument("note", StringArgumentType.greedyString()).executes { ctx ->
+                                        handleAdd(
+                                            ctx.source,
+                                            StringArgumentType.getString(ctx, "ign"),
+                                            StringArgumentType.getString(ctx, "note")
+                                        )
+                                        1
+                                    }
+                                )
                         )
                     )
                     .then(
@@ -68,12 +79,18 @@ object WatchlistCommands {
         )
     }
 
-private fun handleAdd(source: FabricClientCommandSource, ign: String) {
-        if (!Watchlist.add(WatchlistEntry(ign = ign))) {
+    private fun handleAdd(source: FabricClientCommandSource, ign: String, note: String?) {
+        val normalizedNote = note?.trim()?.takeIf { it.isNotEmpty() }
+        if (!Watchlist.add(WatchlistEntry(ign = ign, note = normalizedNote))) {
             source.sendError(Component.literal("$ign is already on your watchlist.").withStyle(ChatFormatting.RED))
             return
         }
-        source.sendFeedback(Component.literal("Added $ign to your watchlist.").withStyle(ChatFormatting.GREEN))
+        val feedback = Component.literal("Added $ign to your watchlist.").withStyle(ChatFormatting.GREEN)
+        if (normalizedNote != null) {
+            feedback.append(Component.literal(" — note: ").withStyle(ChatFormatting.GRAY))
+                .append(Component.literal(normalizedNote).withStyle(ChatFormatting.WHITE))
+        }
+        source.sendFeedback(feedback)
 
         MojangApi.resolveProfile(ign).thenAccept { profile ->
             if (profile == null) return@thenAccept
