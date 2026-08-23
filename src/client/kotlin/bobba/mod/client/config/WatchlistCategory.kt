@@ -23,6 +23,15 @@ class WatchlistCategory {
 
     @JvmField
     @Expose
+    @ConfigOption(
+        name = "Auto-kick on party join",
+        desc = "Automatically run /party kick on a watchlisted player when they join your party. Off by default."
+    )
+    @ConfigEditorBoolean
+    var autoKickOnPartyJoin: Boolean = false
+
+    @JvmField
+    @Expose
     @ConfigOption(name = "Warn on server presence", desc = "Show a warning when a watchlisted player is on the same server as you.")
     @ConfigEditorBoolean
     var warnOnServerPresence: Boolean = true

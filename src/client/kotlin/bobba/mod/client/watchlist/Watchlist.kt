@@ -49,13 +49,6 @@ object Watchlist {
         save()
     }
 
-    fun attachRankByIgn(ign: String, rank: HypixelRank) {
-        val existing = getByIgn(ign) ?: return
-        if (existing.rank == rank) return
-        byIgn[existing.ign.lowercase()] = existing.copy(rank = rank)
-        save()
-    }
-
     fun setNote(ign: String, note: String?) {
         val existing = getByIgn(ign) ?: return
         val normalized = note?.trim()?.takeIf { it.isNotEmpty() }

@@ -17,11 +17,6 @@ class BobbaConfig : Config() {
 
     @JvmField
     @Expose
-    @Category(name = "Party", desc = "Party-wide automations independent of the watchlist")
-    var party: PartyCategory = PartyCategory()
-
-    @JvmField
-    @Expose
     @Category(name = "API", desc = "External API integration settings")
     var api: ApiCategory = ApiCategory()
 
