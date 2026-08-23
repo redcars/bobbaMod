@@ -14,6 +14,10 @@ object Keybinds {
             data = data.copy(active = data.presets.first().name)
             save()
         }
+        if (data.defaultPreset != null && data.presets.none { it.name == data.defaultPreset }) {
+            data.defaultPreset = null
+            save()
+        }
     }
 
     fun save() = KeybindsStorage.save(data)

@@ -54,17 +54,24 @@ object SkyblockLocation {
     }
 
     private fun detect(mc: Minecraft): SkyblockIsland? {
-        val area = readAreaFromTabList(mc) ?: readScoreboardText(mc) ?: return null
-        return SkyblockIsland.match(area)
+        // Prefer the tab-list area line; only if it resolves to nothing fall through to the
+        // scoreboard (which is restricted to instances the sidebar reliably names).
+        readAreaFromTabList(mc)?.let { return SkyblockIsland.match(it) }
+        return readScoreboardText(mc)?.let { SkyblockIsland.matchScoreboard(it) }
     }
 
-    /** Reads the raw area text (e.g. "Hub", "Dungeon Hub") from the tab-list "Area:"/"Dungeon:" line. */
+    /**
+     * Reads the raw area text (e.g. "Hub", "Dungeon Hub") from the tab-list "Area:"/"Dungeon:"
+     * line. Collects every candidate line and returns the first that resolves to a known island, so
+     * a non-resolving candidate doesn't mask the scoreboard fallback.
+     */
     fun readAreaFromTabList(mc: Minecraft): String? {
         val connection = mc.connection ?: return null
         for (info in connection.onlinePlayers) {
             val raw = info.tabListDisplayName?.string ?: continue
             val match = areaRegex.find(stripCodes(raw)) ?: continue
-            return match.groupValues[1].trim()
+            val candidate = match.groupValues[1].trim()
+            if (SkyblockIsland.match(candidate) != null) return candidate
         }
         return null
     }
