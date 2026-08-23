@@ -6,7 +6,10 @@ import bobba.mod.client.watchlist.Watchlist
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
 import net.minecraft.ChatFormatting
 import net.minecraft.client.Minecraft
+import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.HoverEvent
+import net.minecraft.network.chat.Style
 
 object PartyDetection {
     // `\]` inside the character class is required by Java's regex grammar;
@@ -41,16 +44,21 @@ object PartyDetection {
             ?: dungeonJoinRegex.matchEntire(trimmed)
             ?: return
         val ign = match.groupValues[1]
+        val config = ConfigManager.instance
+        val entry = Watchlist.getByIgn(ign)
 
-        val entry = Watchlist.getByIgn(ign) ?: return
-
-        if (ConfigManager.instance.watchlist.warnOnPartyJoin) {
-            val noteSuffix = entry.note?.takeIf { it.isNotBlank() }?.let { " — $it" } ?: ""
-            Notifier.warn("Watchlisted player joined your party: $ign$noteSuffix")
+        if (entry != null && config.watchlist.warnOnPartyJoin) {
+            Notifier.warn("Watchlisted player joined your party: $ign", entry.note)
         }
 
-        if (ConfigManager.instance.watchlist.autoKickOnPartyJoin) {
+        // Auto-kick already removes them, so skip the manual button in that case.
+        if (entry != null && config.party.autoKickWatchlisted) {
             kick(ign)
+            return
+        }
+
+        if (config.party.quickKickButton) {
+            showQuickKickButton(ign)
         }
     }
 
@@ -62,6 +70,25 @@ object PartyDetection {
             mc.gui.chat.addClientSystemMessage(
                 Component.literal("[BobbaMod] ").withStyle(ChatFormatting.GOLD)
                     .append(Component.literal("Auto-kicked watchlisted player: $ign").withStyle(ChatFormatting.RED))
+            )
+        }
+    }
+
+    /** Posts a clickable [Kick] button for any party joiner, watchlisted or not. */
+    private fun showQuickKickButton(ign: String) {
+        val mc = Minecraft.getInstance()
+        mc.execute {
+            val button = Component.literal("[Kick]").withStyle(
+                Style.EMPTY
+                    .withColor(ChatFormatting.RED)
+                    .withUnderlined(true)
+                    .withClickEvent(ClickEvent.RunCommand("/party kick $ign"))
+                    .withHoverEvent(HoverEvent.ShowText(Component.literal("Run /party kick $ign")))
+            )
+            mc.gui.chat.addClientSystemMessage(
+                Component.literal("[BobbaMod] ").withStyle(ChatFormatting.GOLD)
+                    .append(Component.literal("$ign joined — ").withStyle(ChatFormatting.YELLOW))
+                    .append(button)
             )
         }
     }

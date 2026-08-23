@@ -17,6 +17,11 @@ class BobbaConfig : Config() {
 
     @JvmField
     @Expose
+    @Category(name = "Party", desc = "Actions when players join your party")
+    var party: PartyCategory = PartyCategory()
+
+    @JvmField
+    @Expose
     @Category(name = "API", desc = "External API integration settings")
     var api: ApiCategory = ApiCategory()
 
