@@ -5,19 +5,23 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.minecraft.client.Minecraft
 
 object KeybindHandler {
-    // Number of ticks (20 ticks = 1s) after a screen closes during which
-    // keybinds stay inert, so a keystroke meant for the closing screen
-    // (e.g. the last letter typed in chat) can't leak into a command.
+    // Ticks after a screen closes during which keybinds stay inert, so a keystroke
+    // meant for the closing screen (e.g. the last letter typed in chat) can't leak
+    // into a command. At 20 TPS this is roughly a quarter second.
     private const val GRACE_TICKS = 5
 
-    private val pressed = mutableMapOf<Int, Boolean>()
+    // Previous tick's key states, keyed by key code. Rebuilt each tick from a fresh
+    // snapshot so edge detection reads a stable "was down last tick" for every entry.
+    private var pressed = mapOf<Int, Boolean>()
     private var graceRemaining = 0
 
     fun init() {
         ClientTickEvents.END_CLIENT_TICK.register { mc ->
             if (mc.player == null) {
-                if (pressed.isNotEmpty()) pressed.clear()
-                graceRemaining = 0
+                if (pressed.isNotEmpty()) pressed = emptyMap()
+                // Arm the grace window so a key still held when the world loads isn't
+                // treated as a fresh press on the first in-world tick.
+                graceRemaining = GRACE_TICKS
                 return@register
             }
 
@@ -33,20 +37,20 @@ object KeybindHandler {
             val allowFire = !screenOpen && graceRemaining == 0
 
             val window = mc.window
-            val entries = Keybinds.all()
-            val seenKeys = mutableSetOf<Int>()
-            entries.forEach { entry ->
+            // Sample each distinct key once and compare against the previous tick's
+            // committed state — not a map mutated mid-loop — so several keybinds
+            // sharing one key all see the same wasDown and each can fire.
+            val nextPressed = mutableMapOf<Int, Boolean>()
+            Keybinds.all().forEach { entry ->
                 val code = entry.keyCode
                 if (code <= 0) return@forEach
-                seenKeys += code
-                val isDown = InputConstants.isKeyDown(window, code)
+                val isDown = nextPressed.getOrPut(code) { InputConstants.isKeyDown(window, code) }
                 val wasDown = pressed[code] ?: false
-                pressed[code] = isDown
                 if (allowFire && isDown && !wasDown && entry.isEnabled) {
                     fire(entry.command)
                 }
             }
-            pressed.keys.retainAll(seenKeys)
+            pressed = nextPressed
         }
     }
 
