@@ -8,6 +8,17 @@ import net.minecraft.network.chat.Component
 import net.minecraft.sounds.SoundEvents
 
 object Notifier {
+    /** A quiet informational message (no sound), for non-alerting status like preset swaps. */
+    fun info(text: String) {
+        val mc = Minecraft.getInstance()
+        mc.execute {
+            mc.gui.chat.addClientSystemMessage(
+                Component.literal("[BobbaMod] ").withStyle(ChatFormatting.GOLD)
+                    .append(Component.literal(text).withStyle(ChatFormatting.GRAY))
+            )
+        }
+    }
+
     fun warn(text: String) {
         val mc = Minecraft.getInstance()
         mc.execute {

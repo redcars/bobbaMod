@@ -175,6 +175,12 @@ class KeybindEditorScreen(parent: Screen?) :
                 }
             }.bounds(presetsLeft + presetButtonWidth + 3, inputY, PRESETS_ADD_BUTTON_WIDTH, 20).build()
         )
+
+        val autoSwapLabel = if (Keybinds.isAutoSwapEnabled()) "Auto-swap: ON" else "Auto-swap…"
+        addRenderableWidget(
+            Button.builder(Component.literal(autoSwapLabel)) { AutoSwapScreen.open() }
+                .bounds(presetsLeft, panelFooterTop, PRESETS_SECTION_WIDTH, 20).build()
+        )
     }
 
     override fun keyPressed(keyEvent: KeyEvent): Boolean {

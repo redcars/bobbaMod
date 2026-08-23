@@ -32,12 +32,32 @@ object KeybindsStorage {
                 val entries = gson.fromJson(text, Array<KeybindEntry>::class.java)?.toMutableList() ?: mutableListOf()
                 KeybindsData(DEFAULT_PRESET_NAME, mutableListOf(KeybindPreset(DEFAULT_PRESET_NAME, entries)))
             } else {
-                gson.fromJson(text, KeybindsData::class.java) ?: defaultData()
+                sanitize(gson.fromJson(text, KeybindsData::class.java)) ?: defaultData()
             }
         } catch (e: Exception) {
             logger.error("Failed to load keybinds from {}", file, e)
             defaultData()
         }
+    }
+
+    /**
+     * Backfills fields that older config files omit. Gson instantiates Kotlin data classes without
+     * running constructors, so absent collection fields come back null rather than as their
+     * declared defaults; normalize them here so the rest of the code can rely on non-null sets.
+     */
+    @Suppress("SENSELESS_COMPARISON", "USELESS_ELVIS")
+    private fun sanitize(data: KeybindsData?): KeybindsData? {
+        data ?: return null
+        if (data.presets == null) return null
+        data.presets.forEachIndexed { i, preset ->
+            if (preset.keybinds == null || preset.islands == null) {
+                data.presets[i] = preset.copy(
+                    keybinds = preset.keybinds ?: mutableListOf(),
+                    islands = preset.islands ?: mutableSetOf(),
+                )
+            }
+        }
+        return data
     }
 
     fun save(data: KeybindsData) {
