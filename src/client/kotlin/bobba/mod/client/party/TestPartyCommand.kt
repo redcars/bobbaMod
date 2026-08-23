@@ -28,6 +28,14 @@ object TestPartyCommand {
                             }
                         )
                     )
+                    .then(
+                        literal("kick").then(
+                            argument("ign", StringArgumentType.word()).executes { ctx ->
+                                PartyDetection.simulateKick(StringArgumentType.getString(ctx, "ign"))
+                                1
+                            }
+                        )
+                    )
             )
         }
     }
@@ -38,8 +46,7 @@ object TestPartyCommand {
         PartyDetection.handleMessage(fake)
     }
 
-    // Party Finder joins carry no [RANK] text; the aqua § code on the name is the rank signal,
-    // matching how Hypixel formats the real message.
+    // Party Finder joins carry no [RANK] text, matching how Hypixel formats the real message.
     private fun simulateFinderJoin(ign: String) {
         val fake = Component.literal(
             "§dParty Finder §f> §b$ign §ejoined the dungeon group! (§bArcher Level 9§e)"

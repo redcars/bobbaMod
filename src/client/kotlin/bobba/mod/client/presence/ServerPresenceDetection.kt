@@ -50,8 +50,7 @@ object ServerPresenceDetection {
         if (uuid in warnedThisSession) return
         val entry = Watchlist.getByUuid(uuid) ?: Watchlist.getByIgn(name) ?: return
         warnedThisSession.add(uuid)
-        val noteSuffix = entry.note?.takeIf { it.isNotBlank() }?.let { " — $it" } ?: ""
-        Notifier.warn("Watchlisted player on this server: ${entry.ign}$noteSuffix")
+        Notifier.warn("Watchlisted player on this server: ${entry.ign}", entry.note)
     }
 
     fun simulateSeen(ign: String) {

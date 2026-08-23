@@ -17,7 +17,7 @@ class BobbaConfig : Config() {
 
     @JvmField
     @Expose
-    @Category(name = "Party", desc = "Party-wide automations independent of the watchlist")
+    @Category(name = "Party", desc = "Actions when players join your party")
     var party: PartyCategory = PartyCategory()
 
     @JvmField
