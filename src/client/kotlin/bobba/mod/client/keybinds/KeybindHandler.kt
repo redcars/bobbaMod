@@ -5,14 +5,32 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.minecraft.client.Minecraft
 
 object KeybindHandler {
+    // Number of ticks (20 ticks = 1s) after a screen closes during which
+    // keybinds stay inert, so a keystroke meant for the closing screen
+    // (e.g. the last letter typed in chat) can't leak into a command.
+    private const val GRACE_TICKS = 5
+
     private val pressed = mutableMapOf<Int, Boolean>()
+    private var graceRemaining = 0
 
     fun init() {
         ClientTickEvents.END_CLIENT_TICK.register { mc ->
-            if (mc.screen != null || mc.player == null) {
+            if (mc.player == null) {
                 if (pressed.isNotEmpty()) pressed.clear()
+                graceRemaining = 0
                 return@register
             }
+
+            // Keep tracking key state even while a screen is open so that a key
+            // held across the screen-close transition (e.g. typing in chat) is
+            // recorded as already-down and isn't treated as a fresh press.
+            val screenOpen = mc.screen != null
+            if (screenOpen) {
+                graceRemaining = GRACE_TICKS
+            } else if (graceRemaining > 0) {
+                graceRemaining--
+            }
+            val allowFire = !screenOpen && graceRemaining == 0
 
             val window = mc.window
             val entries = Keybinds.all()
@@ -24,7 +42,7 @@ object KeybindHandler {
                 val isDown = InputConstants.isKeyDown(window, code)
                 val wasDown = pressed[code] ?: false
                 pressed[code] = isDown
-                if (isDown && !wasDown && entry.isEnabled) {
+                if (allowFire && isDown && !wasDown && entry.isEnabled) {
                     fire(entry.command)
                 }
             }
