@@ -46,6 +46,26 @@ object Keybinds {
         return true
     }
 
+    /**
+     * Renames a preset in place, keeping its keybinds and island mappings and following the name
+     * through the active/default pointers. Returns false for a blank name, an unknown preset, or a
+     * name already taken by another preset.
+     */
+    fun renamePreset(oldName: String, newName: String): Boolean {
+        val trimmed = newName.trim()
+        if (trimmed.isBlank()) return false
+        val index = data.presets.indexOfFirst { it.name == oldName }
+        if (index < 0) return false
+        if (trimmed == oldName) return true
+        if (data.presets.any { it.name == trimmed }) return false
+
+        data.presets[index] = data.presets[index].copy(name = trimmed)
+        if (data.active == oldName) data = data.copy(active = trimmed)
+        if (data.defaultPreset == oldName) data.defaultPreset = trimmed
+        save()
+        return true
+    }
+
     fun removePreset(name: String): Boolean {
         if (data.presets.size <= 1) return false
         val removed = data.presets.removeAll { it.name == name }
