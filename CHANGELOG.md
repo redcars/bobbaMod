@@ -1,5 +1,15 @@
 # Changelog
 
+## [3.1.0](https://github.com/redcars/bobbaMod/compare/v3.0.0...v3.1.0) (2026-09-01)
+
+
+### Features
+
+* announce auto-swapped keybind presets in chat ([4080e4c](https://github.com/redcars/bobbaMod/commit/4080e4c9a6db34232d9e58aea7b77acf346d2307))
+* pick auto-swap presets from a dropdown ([5a91757](https://github.com/redcars/bobbaMod/commit/5a91757ccbf8cb6493558607d25bfdddea8fa93f))
+* preset dropdown, renaming, and auto-swap chat announcement ([9d32889](https://github.com/redcars/bobbaMod/commit/9d32889b462e46b29ee0e417c6c328c2344f57fd))
+* rename keybind presets ([20098fd](https://github.com/redcars/bobbaMod/commit/20098fd6bd053c48da044da14900d9eed30c34ac))
+
 ## [3.0.0](https://github.com/redcars/bobbaMod/compare/v2.0.0...v3.0.0) (2026-08-23)
 
 
