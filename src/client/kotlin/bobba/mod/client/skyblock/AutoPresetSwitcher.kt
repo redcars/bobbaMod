@@ -3,7 +3,9 @@ package bobba.mod.client.skyblock
 import bobba.mod.client.keybinds.Keybinds
 import bobba.mod.client.notify.Notifier
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
+import net.minecraft.ChatFormatting
 import net.minecraft.client.Minecraft
+import net.minecraft.network.chat.Component
 
 /**
  * Switches the active keybind preset to match the current SkyBlock island.
@@ -43,6 +45,10 @@ object AutoPresetSwitcher {
 
         Keybinds.setActive(target)
         val reason = island?.displayName ?: "unmapped area"
-        Notifier.info("Keybind preset → $target ($reason)")
+        Notifier.info(
+            Component.literal("Auto-swap: keybind preset → ").withStyle(ChatFormatting.GRAY)
+                .append(Component.literal(target).withStyle(ChatFormatting.AQUA))
+                .append(Component.literal(" ($reason)").withStyle(ChatFormatting.DARK_GRAY))
+        )
     }
 }

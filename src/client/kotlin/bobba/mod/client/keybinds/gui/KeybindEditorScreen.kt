@@ -10,6 +10,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.EditBox
+import net.minecraft.client.gui.components.Tooltip
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.input.KeyEvent
 import net.minecraft.network.chat.Component
@@ -29,8 +30,11 @@ class KeybindEditorScreen(parent: Screen?) :
 
         private const val LEFT_SECTION_WIDTH = 375
         private const val DIVIDER_GAP = 10
-        private const val PRESETS_SECTION_WIDTH = 140
+        private const val PRESETS_SECTION_WIDTH = 165
         private const val PRESETS_ADD_BUTTON_WIDTH = 20
+        private const val PRESETS_BUTTON_GAP = 3
+
+        private val NAME_ERROR_COLOR = 0xFFFF5555.toInt()
 
         fun open() {
             val mc = Minecraft.getInstance()
@@ -43,6 +47,10 @@ class KeybindEditorScreen(parent: Screen?) :
 
     private var capturingForIndex: Int? = null
     private lateinit var presetNameInput: EditBox
+
+    /** Name of the preset currently being renamed in place, if any. */
+    private var renamingPreset: String? = null
+    private var renameInput: EditBox? = null
 
     private val leftSectionLeft get() = panelLeft + 5
     private val leftSectionCenter get() = leftSectionLeft + LEFT_SECTION_WIDTH / 2
@@ -124,11 +132,21 @@ class KeybindEditorScreen(parent: Screen?) :
     private fun renderPresetsColumn() {
         val presets = Keybinds.presets()
         val activeName = Keybinds.activeName()
-        val presetButtonWidth = PRESETS_SECTION_WIDTH - PRESETS_ADD_BUTTON_WIDTH - 3
+        // Two trailing buttons per row (rename + delete); the add row reuses the same name width.
+        val presetButtonWidth =
+            PRESETS_SECTION_WIDTH - 2 * (PRESETS_ADD_BUTTON_WIDTH + PRESETS_BUTTON_GAP)
+        val renameButtonX = presetsLeft + presetButtonWidth + PRESETS_BUTTON_GAP
+        val deleteButtonX = renameButtonX + PRESETS_ADD_BUTTON_WIDTH + PRESETS_BUTTON_GAP
         val canDelete = presets.size > 1
 
+        renameInput = null
         presets.take(MAX_VISIBLE).forEachIndexed { i, preset ->
             val rowY = panelContentTop + i * ROW_HEIGHT
+            if (preset.name == renamingPreset) {
+                addRenameRow(preset.name, rowY, presetButtonWidth, renameButtonX)
+                return@forEachIndexed
+            }
+
             val isActive = preset.name == activeName
             val labelText = if (isActive) "> ${preset.name}" else preset.name
             val labelComponent = Component.literal(labelText).withStyle(
@@ -143,13 +161,22 @@ class KeybindEditorScreen(parent: Screen?) :
                 }.bounds(presetsLeft, rowY, presetButtonWidth, 20).build()
             )
 
+            addRenderableWidget(
+                Button.builder(Component.literal("✎")) {
+                    renamingPreset = preset.name
+                    capturingForIndex = null
+                    rebuildWidgets()
+                }.tooltip(Tooltip.create(Component.literal("Rename preset")))
+                    .bounds(renameButtonX, rowY, PRESETS_ADD_BUTTON_WIDTH, 20).build()
+            )
+
             if (canDelete) {
                 addRenderableWidget(
                     Button.builder(Component.literal("X")) {
                         Keybinds.removePreset(preset.name)
                         capturingForIndex = null
                         rebuildWidgets()
-                    }.bounds(presetsLeft + presetButtonWidth + 3, rowY, PRESETS_ADD_BUTTON_WIDTH, 20).build()
+                    }.bounds(deleteButtonX, rowY, PRESETS_ADD_BUTTON_WIDTH, 20).build()
                 )
             }
         }
@@ -173,7 +200,7 @@ class KeybindEditorScreen(parent: Screen?) :
                     capturingForIndex = null
                     rebuildWidgets()
                 }
-            }.bounds(presetsLeft + presetButtonWidth + 3, inputY, PRESETS_ADD_BUTTON_WIDTH, 20).build()
+            }.bounds(renameButtonX, inputY, PRESETS_ADD_BUTTON_WIDTH, 20).build()
         )
 
         val autoSwapLabel = if (Keybinds.isAutoSwapEnabled()) "Auto-swap: ON" else "Auto-swap…"
@@ -183,7 +210,71 @@ class KeybindEditorScreen(parent: Screen?) :
         )
     }
 
+    /**
+     * Focus the name field while renaming. Vanilla runs this right after [init], so doing it here
+     * (rather than inside [addRenameRow]) keeps the tab-navigation default from stealing the focus.
+     */
+    override fun setInitialFocus() {
+        val input = renameInput
+        if (input != null) setInitialFocus(input) else super.setInitialFocus()
+    }
+
+    /** Replaces a preset row with an in-place name field plus a confirm button. */
+    private fun addRenameRow(name: String, rowY: Int, nameWidth: Int, confirmX: Int) {
+        val input = EditBox(font, presetsLeft, rowY, nameWidth, 20, Component.empty())
+        input.setMaxLength(32)
+        input.value = name
+        input.moveCursorToEnd(false)
+        // Clear the "name taken" tint as soon as the name is edited again.
+        input.setResponder { input.setTextColor(EditBox.DEFAULT_TEXT_COLOR) }
+        addRenderableWidget(input)
+        renameInput = input
+
+        addRenderableWidget(
+            Button.builder(Component.literal("✔")) { commitRename() }
+                .tooltip(Tooltip.create(Component.literal("Save name (Enter)")))
+                .bounds(confirmX, rowY, PRESETS_ADD_BUTTON_WIDTH, 20).build()
+        )
+    }
+
+    private fun commitRename() {
+        val oldName = renamingPreset ?: return
+        val input = renameInput
+        val newName = input?.value?.trim().orEmpty()
+        if (newName.isEmpty() || newName == oldName) {
+            cancelRename()
+            return
+        }
+        if (!Keybinds.renamePreset(oldName, newName)) {
+            // Another preset already uses that name; stay in the field and flag it.
+            input?.setTextColor(NAME_ERROR_COLOR)
+            return
+        }
+        renamingPreset = null
+        renameInput = null
+        rebuildWidgets()
+    }
+
+    private fun cancelRename() {
+        renamingPreset = null
+        renameInput = null
+        rebuildWidgets()
+    }
+
     override fun keyPressed(keyEvent: KeyEvent): Boolean {
+        if (renamingPreset != null) {
+            when (keyEvent.key()) {
+                InputConstants.KEY_RETURN, InputConstants.KEY_NUMPADENTER -> {
+                    commitRename()
+                    return true
+                }
+                InputConstants.KEY_ESCAPE -> {
+                    cancelRename()
+                    return true
+                }
+            }
+        }
+
         val capturing = capturingForIndex
         if (capturing != null) {
             val keyCode = keyEvent.key()
