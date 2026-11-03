@@ -1,5 +1,22 @@
 # Changelog
 
+## [4.0.0](https://github.com/redcars/bobbaMod/compare/v3.0.0...v4.0.0) (2026-11-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* requires Minecraft 26.2. The 26.1.2 build lives on the update-26.1.2 branch.
+
+### Features
+
+* add image and GIF overlays ([1595bca](https://github.com/redcars/bobbaMod/commit/1595bca87415df4e02a5b4990b2dbd26f44bcf92))
+* add image and GIF overlays ([ef379cd](https://github.com/redcars/bobbaMod/commit/ef379cd43d64c49e2556eca9edb3506f6e5215f8))
+* announce auto-swapped keybind presets in chat ([4080e4c](https://github.com/redcars/bobbaMod/commit/4080e4c9a6db34232d9e58aea7b77acf346d2307))
+* pick auto-swap presets from a dropdown ([5a91757](https://github.com/redcars/bobbaMod/commit/5a91757ccbf8cb6493558607d25bfdddea8fa93f))
+* port to Minecraft 26.2 ([bb38007](https://github.com/redcars/bobbaMod/commit/bb380070f999d0c66cf577ec04441ae9aabef3be))
+* preset dropdown, renaming, and auto-swap chat announcement ([9d32889](https://github.com/redcars/bobbaMod/commit/9d32889b462e46b29ee0e417c6c328c2344f57fd))
+* rename keybind presets ([20098fd](https://github.com/redcars/bobbaMod/commit/20098fd6bd053c48da044da14900d9eed30c34ac))
+
 ## [3.0.0](https://github.com/redcars/bobbaMod/compare/v2.0.0...v3.0.0) (2026-08-23)
 
 
