@@ -27,7 +27,7 @@ object OverlayHud {
     fun init() {
         // Below chat so messages stay readable over a big overlay.
         HudElementRegistry.attachElementBefore(VanillaHudElements.CHAT, ID) { graphics, _ ->
-            if (!ConfigManager.instance.media.showImageOverlays) return@attachElementBefore
+            if (!ConfigManager.instance.overlays.showImageOverlays) return@attachElementBefore
             // The layout editor draws them itself, with outlines and handles.
             if (Minecraft.getInstance().gui.screen() is OverlayLayoutScreen) return@attachElementBefore
             for (overlay in ImageOverlays.overlays) {

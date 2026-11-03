@@ -22,8 +22,13 @@ class BobbaConfig : Config() {
 
     @JvmField
     @Expose
-    @Category(name = "Media", desc = "Image and GIF overlays")
-    var media: MediaCategory = MediaCategory()
+    @Category(name = "Overlays", desc = "Pictures and GIFs on your screen")
+    var overlays: OverlaysCategory = OverlaysCategory()
+
+    @JvmField
+    @Expose
+    @Category(name = "Kuudra", desc = "Kuudra boss and lair tweaks")
+    var kuudra: KuudraCategory = KuudraCategory()
 
     @JvmField
     @Expose

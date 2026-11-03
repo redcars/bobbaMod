@@ -3,7 +3,8 @@
 	"package": "bobba.mod.client.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"client": [
-		"ChatScreenMixin"
+		"ChatScreenMixin",
+		"ScreenFilesDropMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

@@ -26,6 +26,13 @@ object TestIslandCommand {
                             )
                     )
                     ctx.source.sendFeedback(
+                        Component.literal("Kuudra lair: ").withStyle(ChatFormatting.GRAY)
+                            .append(
+                                Component.literal(if (SkyblockLocation.inKuudraLair) "yes" else "no")
+                                    .withStyle(ChatFormatting.WHITE)
+                            )
+                    )
+                    ctx.source.sendFeedback(
                         Component.literal("Tab area: ").withStyle(ChatFormatting.GRAY)
                             .append(Component.literal(tabArea ?: "—").withStyle(ChatFormatting.WHITE))
                     )
