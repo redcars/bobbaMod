@@ -17,7 +17,7 @@ object Notifier {
     fun info(text: Component) {
         val mc = Minecraft.getInstance()
         mc.execute {
-            mc.gui.chat.addClientSystemMessage(
+            mc.gui.hud.chat.addClientSystemMessage(
                 Component.literal("[BobbaMod] ").withStyle(ChatFormatting.GOLD).append(text)
             )
         }
@@ -37,7 +37,7 @@ object Notifier {
                     .append(Component.literal(" — note: ").withStyle(ChatFormatting.GRAY))
                     .append(Component.literal(trimmed).withStyle(ChatFormatting.WHITE))
             }
-            mc.gui.chat.addClientSystemMessage(message)
+            mc.gui.hud.chat.addClientSystemMessage(message)
             if (ConfigManager.instance.watchlist.playSound) {
                 mc.soundManager.play(
                     SimpleSoundInstance.forUI(SoundEvents.NOTE_BLOCK_PLING.value(), 1.5f)

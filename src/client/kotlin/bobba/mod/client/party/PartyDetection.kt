@@ -73,7 +73,7 @@ object PartyDetection {
         mc.execute {
             val connection = mc.player?.connection ?: return@execute
             connection.sendCommand("party kick $ign")
-            mc.gui.chat.addClientSystemMessage(
+            mc.gui.hud.chat.addClientSystemMessage(
                 Component.literal("[BobbaMod] ").withStyle(ChatFormatting.GOLD)
                     .append(Component.literal("Sent /party kick for watchlisted player: $ign").withStyle(ChatFormatting.RED))
             )
@@ -91,7 +91,7 @@ object PartyDetection {
                     .withClickEvent(ClickEvent.RunCommand("/party kick $ign"))
                     .withHoverEvent(HoverEvent.ShowText(Component.literal("Run /party kick $ign")))
             )
-            mc.gui.chat.addClientSystemMessage(
+            mc.gui.hud.chat.addClientSystemMessage(
                 Component.literal("[BobbaMod] ").withStyle(ChatFormatting.GOLD)
                     .append(Component.literal("$ign joined — ").withStyle(ChatFormatting.YELLOW))
                     .append(button)

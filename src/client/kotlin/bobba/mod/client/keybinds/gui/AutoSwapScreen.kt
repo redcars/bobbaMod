@@ -33,7 +33,7 @@ class AutoSwapScreen(parent: Screen?) :
 
         fun open() {
             val mc = Minecraft.getInstance()
-            mc.execute { mc.setScreen(AutoSwapScreen(mc.screen)) }
+            mc.execute { mc.gui.setScreen(AutoSwapScreen(mc.gui.screen())) }
         }
     }
 

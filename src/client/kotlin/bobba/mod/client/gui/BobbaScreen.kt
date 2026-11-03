@@ -52,7 +52,7 @@ abstract class BobbaScreen(
     }
 
     override fun onClose() {
-        Minecraft.getInstance().setScreen(parent)
+        Minecraft.getInstance().gui.setScreen(parent)
     }
 
     protected fun addDoneButton() {

@@ -152,7 +152,7 @@ object UpdateChecker {
 
     private fun notifyUpdateAvailable(current: String, latest: String, url: String) {
         Minecraft.getInstance().execute {
-            val chat = Minecraft.getInstance().gui.chat
+            val chat = Minecraft.getInstance().gui.hud.chat
             chat.addClientSystemMessage(
                 Component.literal("[BobbaMod] ").withStyle(ChatFormatting.GOLD)
                     .append(Component.literal("Update available: ").withStyle(ChatFormatting.YELLOW))
@@ -174,7 +174,7 @@ object UpdateChecker {
 
     private fun notify(text: String, color: ChatFormatting) {
         Minecraft.getInstance().execute {
-            Minecraft.getInstance().gui.chat.addClientSystemMessage(
+            Minecraft.getInstance().gui.hud.chat.addClientSystemMessage(
                 Component.literal("[BobbaMod] ").withStyle(ChatFormatting.GOLD)
                     .append(Component.literal(text).withStyle(color))
             )

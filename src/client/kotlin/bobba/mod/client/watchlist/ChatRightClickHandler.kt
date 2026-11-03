@@ -18,19 +18,19 @@ object ChatRightClickHandler {
         val mc = Minecraft.getInstance()
         val font = mc.font
         val finder = ActiveTextCollector.ClickableStyleFinder(font, mouseX.toInt(), mouseY.toInt())
-        mc.gui.chat.captureClickableText(finder, mouseX.toInt(), mouseY.toInt(), ChatComponent.DisplayMode.FOREGROUND)
+        mc.gui.hud.chat.captureClickableText(finder, mouseX.toInt(), mouseY.toInt(), ChatComponent.DisplayMode.FOREGROUND)
         val style = finder.result() ?: return false
         val ign = extractIgn(style) ?: return false
 
         if (Watchlist.contains(ign)) {
-            mc.gui.chat.addClientSystemMessage(
+            mc.gui.hud.chat.addClientSystemMessage(
                 Component.literal("[BobbaMod] ").withStyle(ChatFormatting.GOLD)
                     .append(Component.literal("$ign is already on your watchlist.").withStyle(ChatFormatting.YELLOW))
             )
             return true
         }
 
-        mc.setScreen(ChatActionsScreen(mc.screen, ign))
+        mc.gui.setScreen(ChatActionsScreen(mc.gui.screen(), ign))
         return true
     }
 
