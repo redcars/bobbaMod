@@ -5,6 +5,8 @@ import bobba.mod.client.config.ConfigManager
 import bobba.mod.client.keybinds.KeybindCommands
 import bobba.mod.client.keybinds.KeybindHandler
 import bobba.mod.client.keybinds.Keybinds
+import bobba.mod.client.overlay.ImageOverlays
+import bobba.mod.client.overlay.OverlayHud
 import bobba.mod.client.party.PartyDetection
 import bobba.mod.client.party.TestPartyCommand
 import bobba.mod.client.presence.ServerPresenceDetection
@@ -24,6 +26,7 @@ object BobbaModClient : ClientModInitializer {
 		ConfigManager.init()
 		Watchlist.load()
 		Keybinds.load()
+		ImageOverlays.load()
 		WatchlistCommands.register()
 		ConfigCommand.register()
 		KeybindCommands.register()
@@ -34,6 +37,7 @@ object BobbaModClient : ClientModInitializer {
 		KeybindHandler.init()
 		AutoPresetSwitcher.init()
 		SkyblockLocation.init()
+		OverlayHud.init()
 
 		if (FabricLoader.getInstance().isDevelopmentEnvironment) {
 			TestPartyCommand.register()
