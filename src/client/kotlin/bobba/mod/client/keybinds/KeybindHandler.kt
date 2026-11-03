@@ -28,7 +28,7 @@ object KeybindHandler {
             // Keep tracking key state even while a screen is open so that a key
             // held across the screen-close transition (e.g. typing in chat) is
             // recorded as already-down and isn't treated as a fresh press.
-            val screenOpen = mc.screen != null
+            val screenOpen = mc.gui.screen() != null
             if (screenOpen) {
                 graceRemaining = GRACE_TICKS
             } else if (graceRemaining > 0) {

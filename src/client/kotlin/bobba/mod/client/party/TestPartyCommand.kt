@@ -42,7 +42,7 @@ object TestPartyCommand {
 
     private fun simulateJoin(ign: String) {
         val fake = "[MVP+] $ign joined the party."
-        Minecraft.getInstance().gui.chat.addServerSystemMessage(Component.literal(fake))
+        Minecraft.getInstance().gui.hud.chat.addServerSystemMessage(Component.literal(fake))
         PartyDetection.handleMessage(fake)
     }
 
@@ -51,7 +51,7 @@ object TestPartyCommand {
         val fake = Component.literal(
             "§dParty Finder §f> §b$ign §ejoined the dungeon group! (§bArcher Level 9§e)"
         )
-        Minecraft.getInstance().gui.chat.addServerSystemMessage(fake)
+        Minecraft.getInstance().gui.hud.chat.addServerSystemMessage(fake)
         PartyDetection.handleMessage(fake)
     }
 }

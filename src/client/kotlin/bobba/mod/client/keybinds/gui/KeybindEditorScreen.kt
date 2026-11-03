@@ -38,7 +38,7 @@ class KeybindEditorScreen(parent: Screen?) :
 
         fun open() {
             val mc = Minecraft.getInstance()
-            mc.execute { mc.setScreen(KeybindEditorScreen(mc.screen)) }
+            mc.execute { mc.gui.setScreen(KeybindEditorScreen(mc.gui.screen())) }
         }
     }
 

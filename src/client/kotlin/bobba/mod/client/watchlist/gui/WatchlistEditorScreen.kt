@@ -28,7 +28,7 @@ class WatchlistEditorScreen(parent: Screen?) :
 
         fun open() {
             val mc = Minecraft.getInstance()
-            mc.execute { mc.setScreen(WatchlistEditorScreen(mc.screen)) }
+            mc.execute { mc.gui.setScreen(WatchlistEditorScreen(mc.gui.screen())) }
         }
     }
 

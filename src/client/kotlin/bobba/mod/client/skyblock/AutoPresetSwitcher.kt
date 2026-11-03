@@ -22,7 +22,7 @@ object AutoPresetSwitcher {
         // Apply once a screen closes, so an island change that occurred while a GUI was open
         // (and was therefore skipped) takes effect without corrupting in-progress edits.
         ClientTickEvents.END_CLIENT_TICK.register { mc ->
-            val screenOpen = mc.screen != null
+            val screenOpen = mc.gui.screen() != null
             if (screenWasOpen && !screenOpen) applyCurrent()
             screenWasOpen = screenOpen
         }
@@ -37,7 +37,7 @@ object AutoPresetSwitcher {
         if (!Keybinds.isAutoSwapEnabled()) return
         // Never change the active preset while a screen is open; the Keybind Editor writes to the
         // live active preset, so swapping under it would corrupt in-progress edits.
-        if (Minecraft.getInstance().screen != null) return
+        if (Minecraft.getInstance().gui.screen() != null) return
 
         val target = island?.let { Keybinds.presetForIsland(it.id) } ?: Keybinds.defaultPreset()
         if (target == null || Keybinds.presets().none { it.name == target }) return
