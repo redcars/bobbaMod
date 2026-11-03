@@ -22,6 +22,11 @@ class BobbaConfig : Config() {
 
     @JvmField
     @Expose
+    @Category(name = "Media", desc = "Image and GIF overlays")
+    var media: MediaCategory = MediaCategory()
+
+    @JvmField
+    @Expose
     @Category(name = "API", desc = "External API integration settings")
     var api: ApiCategory = ApiCategory()
 
