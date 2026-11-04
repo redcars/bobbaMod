@@ -15,9 +15,6 @@ object KuudraFace {
     // Hypixel's Kuudra is a size-30 magma cube; the other cubes in the lair are far smaller.
     private const val KUUDRA_SIZE = 30
 
-    /** Dev testing: show the face outside Kuudra too (see TestKuudraFaceCommand). */
-    var ignoreIsland = false
-
     val imageName: String? get() = ConfigManager.instance.kuudra.faceImage
 
     fun init() {
@@ -33,7 +30,7 @@ object KuudraFace {
     fun imageFor(state: SlimeRenderState): LoadedImage? {
         val kuudra = ConfigManager.instance.kuudra
         if (!kuudra.faceOverride || state.isInvisible || state.size < KUUDRA_SIZE) return null
-        if (!ignoreIsland && !SkyblockLocation.inKuudraLair) return null
+        if (!SkyblockLocation.inKuudraLair) return null
         return MediaTextures.get(kuudra.faceImage ?: return null)
     }
 

@@ -6,7 +6,7 @@ import bobba.mod.client.keybinds.KeybindCommands
 import bobba.mod.client.keybinds.KeybindHandler
 import bobba.mod.client.keybinds.Keybinds
 import bobba.mod.client.kuudra.KuudraFace
-import bobba.mod.client.kuudra.TestKuudraFaceCommand
+import bobba.mod.client.kuudra.KuudraLair
 import bobba.mod.client.overlay.ImageOverlays
 import bobba.mod.client.overlay.OverlayHud
 import bobba.mod.client.party.PartyDetection
@@ -41,12 +41,12 @@ object BobbaModClient : ClientModInitializer {
 		SkyblockLocation.init()
 		OverlayHud.init()
 		KuudraFace.init()
+		KuudraLair.init()
 
 		if (FabricLoader.getInstance().isDevelopmentEnvironment) {
 			TestPartyCommand.register()
 			TestPresenceCommand.register()
 			TestIslandCommand.register()
-			TestKuudraFaceCommand.register()
 		}
 	}
 }

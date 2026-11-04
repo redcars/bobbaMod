@@ -20,6 +20,16 @@ class KuudraCategory {
     @ConfigEditorKuudraFace
     var faceEditor: String = ""
 
+    @JvmField
+    @Expose
+    @ConfigOption(
+        name = "Hide lair walls and roof",
+        desc = "In Kuudra's Hollow, only draw the arena and the lava around it, so your sky shows through. Only changes what you see: the blocks are still there.\n" +
+            "§cHypixel's Allowed Modifications guide forbids making solid blocks see-through. Use at your own risk."
+    )
+    @ConfigEditorBoolean
+    var hideLair: Boolean = false
+
     /** Stored name in the media library; set by the face editor, not shown as an option. */
     @JvmField
     @Expose
