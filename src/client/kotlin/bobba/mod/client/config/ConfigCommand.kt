@@ -1,6 +1,5 @@
 package bobba.mod.client.config
 
-import bobba.mod.client.overlay.gui.OverlayManagerScreen
 import net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 
@@ -14,7 +13,11 @@ object ConfigCommand {
                         1
                     }
                     .then(literal("overlays").executes {
-                        OverlayManagerScreen.open()
+                        ConfigManager.openScreen("overlays")
+                        1
+                    })
+                    .then(literal("kuudra").executes {
+                        ConfigManager.openScreen("kuudra")
                         1
                     })
             )

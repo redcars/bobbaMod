@@ -1,7 +1,12 @@
 package bobba.mod.client.config
 
+import bobba.mod.client.config.editor.ConfigEditorKuudraFace
+import bobba.mod.client.config.editor.ConfigEditorOverlayList
+import bobba.mod.client.config.editor.GuiOptionEditorKuudraFace
+import bobba.mod.client.config.editor.GuiOptionEditorOverlayList
 import bobba.mod.client.update.ConfigEditorVersionStatus
 import bobba.mod.client.update.GuiOptionEditorVersionStatus
+import io.github.notenoughupdates.moulconfig.common.IMinecraft
 import io.github.notenoughupdates.moulconfig.managed.ManagedConfig
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.Minecraft
@@ -21,10 +26,25 @@ object ConfigManager {
             customProcessor<ConfigEditorVersionStatus> { option, _ ->
                 GuiOptionEditorVersionStatus(option)
             }
+            customProcessor<ConfigEditorOverlayList> { option, _ ->
+                GuiOptionEditorOverlayList(option)
+            }
+            customProcessor<ConfigEditorKuudraFace> { option, _ ->
+                GuiOptionEditorKuudraFace(option)
+            }
         }
     }
 
-    fun openScreen() {
-        Minecraft.getInstance().execute { managed.openConfigGui() }
+    /** For settings changed outside the config GUI, which saves its own edits. */
+    fun save() = managed.saveToFile()
+
+    /** Opens the config GUI, on the tab whose field in [BobbaConfig] is [category] if given. */
+    fun openScreen(category: String? = null) {
+        Minecraft.getInstance().execute {
+            // getEditor() builds a fresh editor each call, so select the tab on the one we open.
+            val editor = managed.getEditor()
+            if (category != null) editor.allCategories[category]?.let { editor.setSelectedCategory(it) }
+            IMinecraft.INSTANCE.openWrappedScreen(editor)
+        }
     }
 }

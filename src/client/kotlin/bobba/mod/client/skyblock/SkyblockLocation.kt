@@ -26,6 +26,13 @@ object SkyblockLocation {
     var current: SkyblockIsland? = null
         private set
 
+    // The instance's sidebar location line, e.g. "⏣ Kuudra's Hollow (T5)".
+    private val kuudraLairRegex = Regex("""Kuudra['’]s Hollow""", RegexOption.IGNORE_CASE)
+
+    /** True only inside a Kuudra run instance, not anywhere else on the Crimson Isle. */
+    var inKuudraLair = false
+        private set
+
     private val listeners = mutableListOf<(SkyblockIsland?) -> Unit>()
     private var ticks = 0
 
@@ -35,14 +42,19 @@ object SkyblockLocation {
     }
 
     fun init() {
-        ClientPlayConnectionEvents.DISCONNECT.register { _, _ -> update(null) }
+        ClientPlayConnectionEvents.DISCONNECT.register { _, _ ->
+            inKuudraLair = false
+            update(null)
+        }
         ClientTickEvents.END_CLIENT_TICK.register { mc ->
             if (mc.player == null) {
+                inKuudraLair = false
                 update(null)
                 return@register
             }
             if (++ticks < SCAN_INTERVAL_TICKS) return@register
             ticks = 0
+            inKuudraLair = readScoreboardText(mc)?.let { kuudraLairRegex.containsMatchIn(it) } == true
             update(detect(mc))
         }
     }
