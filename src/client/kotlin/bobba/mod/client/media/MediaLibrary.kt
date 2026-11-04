@@ -11,16 +11,26 @@ import kotlin.io.path.fileSize
 import kotlin.io.path.isRegularFile
 import kotlin.io.path.name
 
+/** What a feature accepts, and how big a file may be. */
+enum class MediaKind(val extensions: Set<String>, val maxBytes: Long, val label: String) {
+    // Decoded image frames live in RAM and VRAM; a file this big is almost certainly a mistake.
+    IMAGE(setOf("png", "jpg", "jpeg", "gif", "bmp"), 64L * 1024 * 1024, "PNG, JPG, GIF or BMP"),
+
+    // Audio and video stream from disk, so only a sanity cap.
+    CLIP(
+        setOf("mp3", "ogg", "wav", "m4a", "flac", "mp4", "webm", "mkv", "mov"),
+        512L * 1024 * 1024,
+        "MP3, OGG, WAV, M4A, FLAC, MP4, WEBM, MKV or MOV",
+    );
+
+    fun accepts(path: Path) = path.extension.lowercase() in extensions
+}
+
 /**
  * Imported media files, copied into `config/bobbamod/media/` so features keep working after the
  * original file is moved or deleted. Features reference files by their stored name only.
  */
 object MediaLibrary {
-    val IMAGE_EXTENSIONS = setOf("png", "jpg", "jpeg", "gif", "bmp")
-
-    // Decoded frames live in RAM and VRAM; a file this big is almost certainly a mistake.
-    private const val MAX_FILE_BYTES = 64L * 1024 * 1024
-
     private val logger = LoggerFactory.getLogger("bobbamod/media")
 
     val dir: Path by lazy {
@@ -28,8 +38,6 @@ object MediaLibrary {
         Files.createDirectories(dir)
         dir
     }
-
-    fun isImage(path: Path): Boolean = path.extension.lowercase() in IMAGE_EXTENSIONS
 
     /** Path of a stored file. Rejects names that would escape the media folder. */
     fun resolve(name: String): Path {
@@ -39,9 +47,9 @@ object MediaLibrary {
     }
 
     /** Copies [source] into the library and returns its stored name. Blocking; call off-thread. */
-    private fun import(source: Path): String {
+    private fun import(source: Path, kind: MediaKind): String {
         if (!source.isRegularFile()) throw IOException("not a file")
-        if (source.fileSize() > MAX_FILE_BYTES) throw IOException("larger than 64 MB")
+        if (source.fileSize() > kind.maxBytes) throw IOException("larger than ${kind.maxBytes / (1024 * 1024)} MB")
 
         val base = sanitize(source.name.substringBeforeLast('.'))
         val ext = source.extension.lowercase()
@@ -74,20 +82,20 @@ object MediaLibrary {
     }
 
     /**
-     * Copies image files into the library off-thread. [onDone] runs on the render thread with the
+     * Copies files of [kind] into the library off-thread. [onDone] runs on the render thread with the
      * stored names and a message per file that was skipped.
      */
-    fun importImages(paths: List<Path>, onDone: (names: List<String>, errors: List<String>) -> Unit) {
+    fun importFiles(paths: List<Path>, kind: MediaKind, onDone: (names: List<String>, errors: List<String>) -> Unit) {
         Thread({
             val names = mutableListOf<String>()
             val errors = mutableListOf<String>()
             for (path in paths) {
-                if (!isImage(path)) {
-                    errors += "${path.name}: not a PNG, JPG, GIF or BMP"
+                if (!kind.accepts(path)) {
+                    errors += "${path.name}: not a ${kind.label} file"
                     continue
                 }
                 try {
-                    names += import(path)
+                    names += import(path, kind)
                 } catch (e: Exception) {
                     logger.warn("Failed to import {}", path, e)
                     errors += "${path.name}: ${e.message}"
@@ -97,6 +105,9 @@ object MediaLibrary {
         }, "bobbamod-media-import").apply { isDaemon = true }.start()
     }
 
+    fun importImages(paths: List<Path>, onDone: (names: List<String>, errors: List<String>) -> Unit) =
+        importFiles(paths, MediaKind.IMAGE, onDone)
+
     private fun sanitize(base: String): String =
-        base.replace(Regex("[^A-Za-z0-9 ._()-]"), "_").trim().ifEmpty { "image" }.take(64)
+        base.replace(Regex("[^A-Za-z0-9 ._()-]"), "_").trim().ifEmpty { "media" }.take(64)
 }

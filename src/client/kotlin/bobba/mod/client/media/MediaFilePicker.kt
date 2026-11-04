@@ -10,21 +10,22 @@ import java.util.concurrent.atomic.AtomicBoolean
 object MediaFilePicker {
     private val open = AtomicBoolean(false)
 
+    fun pickImages(onPicked: (List<Path>) -> Unit) = pick(MediaKind.IMAGE, "Choose images or GIFs", "Images", onPicked)
+
     /**
      * Shows the dialog and passes the chosen files to [onPicked] on the render thread. Does nothing
      * if a dialog is already open. The dialog blocks its thread, so it runs on its own to keep the
      * game rendering.
      */
-    fun pickImages(onPicked: (List<Path>) -> Unit) {
+    fun pick(kind: MediaKind, title: String, filterName: String, onPicked: (List<Path>) -> Unit) {
         if (!open.compareAndSet(false, true)) return
         Thread({
             try {
                 val result = MemoryStack.stackPush().use { stack ->
-                    val extensions = MediaLibrary.IMAGE_EXTENSIONS
-                    val patterns = stack.mallocPointer(extensions.size)
-                    extensions.forEach { patterns.put(stack.UTF8("*.$it")) }
+                    val patterns = stack.mallocPointer(kind.extensions.size)
+                    kind.extensions.forEach { patterns.put(stack.UTF8("*.$it")) }
                     patterns.flip()
-                    TinyFileDialogs.tinyfd_openFileDialog("Choose images or GIFs", null, patterns, "Images", true)
+                    TinyFileDialogs.tinyfd_openFileDialog(title, null, patterns, filterName, true)
                 }
                 // Multiple selections come back joined with '|'.
                 val paths = result?.split('|')?.filter { it.isNotBlank() }?.map { Path.of(it) }.orEmpty()

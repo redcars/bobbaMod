@@ -20,6 +20,10 @@ object ConfigCommand {
                         ConfigManager.openScreen("kuudra")
                         1
                     })
+                    .then(literal("media").executes {
+                        ConfigManager.openScreen("randomMedia")
+                        1
+                    })
             )
         }
     }
