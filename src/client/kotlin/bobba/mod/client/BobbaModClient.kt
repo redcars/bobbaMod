@@ -7,6 +7,7 @@ import bobba.mod.client.keybinds.KeybindHandler
 import bobba.mod.client.keybinds.Keybinds
 import bobba.mod.client.kuudra.KuudraFace
 import bobba.mod.client.kuudra.KuudraLair
+import bobba.mod.client.media.random.RandomMedia
 import bobba.mod.client.overlay.ImageOverlays
 import bobba.mod.client.overlay.OverlayHud
 import bobba.mod.client.party.PartyDetection
@@ -42,6 +43,7 @@ object BobbaModClient : ClientModInitializer {
 		OverlayHud.init()
 		KuudraFace.init()
 		KuudraLair.init()
+		RandomMedia.init()
 
 		if (FabricLoader.getInstance().isDevelopmentEnvironment) {
 			TestPartyCommand.register()

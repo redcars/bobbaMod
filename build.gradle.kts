@@ -11,6 +11,10 @@ group = providers.gradleProperty("maven_group").get()
 
 repositories {
 	maven("https://maven.notenoughupdates.org/releases/")
+	exclusiveContent {
+		forRepository { maven("https://api.modrinth.com/maven") }
+		filter { includeGroup("maven.modrinth") }
+	}
 }
 
 loom {
@@ -36,6 +40,13 @@ dependencies {
 	val moulconfig = "org.notenoughupdates.moulconfig:${providers.gradleProperty("moulconfig_platform").get()}:${providers.gradleProperty("moulconfig_version").get()}"
 	implementation(moulconfig)
 	include(moulconfig)
+
+	// Optional: random audio/video only works when players install WATERMeDIA themselves, so it
+	// is never bundled. The dev client gets it (and its FFmpeg binaries mod) for testing.
+	val watermedia = providers.gradleProperty("watermedia_version").get()
+	compileOnly("maven.modrinth:watermedia:$watermedia")
+	localRuntime("maven.modrinth:watermedia:$watermedia")
+	localRuntime("maven.modrinth:watermedia-binaries:$watermedia")
 }
 
 tasks.processResources {

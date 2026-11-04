@@ -32,6 +32,11 @@ class BobbaConfig : Config() {
 
     @JvmField
     @Expose
+    @Category(name = "Random Media", desc = "Audio and video that play at random times")
+    var randomMedia: RandomMediaCategory = RandomMediaCategory()
+
+    @JvmField
+    @Expose
     @Category(name = "API", desc = "External API integration settings")
     var api: ApiCategory = ApiCategory()
 

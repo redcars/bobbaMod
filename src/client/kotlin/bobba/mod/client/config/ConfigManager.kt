@@ -2,8 +2,10 @@ package bobba.mod.client.config
 
 import bobba.mod.client.config.editor.ConfigEditorKuudraFace
 import bobba.mod.client.config.editor.ConfigEditorOverlayList
+import bobba.mod.client.config.editor.ConfigEditorRandomClips
 import bobba.mod.client.config.editor.GuiOptionEditorKuudraFace
 import bobba.mod.client.config.editor.GuiOptionEditorOverlayList
+import bobba.mod.client.config.editor.GuiOptionEditorRandomClips
 import bobba.mod.client.update.ConfigEditorVersionStatus
 import bobba.mod.client.update.GuiOptionEditorVersionStatus
 import io.github.notenoughupdates.moulconfig.common.IMinecraft
@@ -31,6 +33,9 @@ object ConfigManager {
             }
             customProcessor<ConfigEditorKuudraFace> { option, _ ->
                 GuiOptionEditorKuudraFace(option)
+            }
+            customProcessor<ConfigEditorRandomClips> { option, _ ->
+                GuiOptionEditorRandomClips(option)
             }
         }
     }
