@@ -11,6 +11,7 @@ import bobba.mod.client.media.random.RandomMedia
 import bobba.mod.client.overlay.ImageOverlays
 import bobba.mod.client.overlay.OverlayHud
 import bobba.mod.client.party.PartyDetection
+import bobba.mod.client.scoreboard.CustomScoreboard
 import bobba.mod.client.party.TestPartyCommand
 import bobba.mod.client.presence.ServerPresenceDetection
 import bobba.mod.client.presence.TestPresenceCommand
@@ -44,6 +45,7 @@ object BobbaModClient : ClientModInitializer {
 		KuudraFace.init()
 		KuudraLair.init()
 		RandomMedia.init()
+		CustomScoreboard.init()
 
 		if (FabricLoader.getInstance().isDevelopmentEnvironment) {
 			TestPartyCommand.register()
