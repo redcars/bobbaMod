@@ -16,6 +16,10 @@ object ConfigCommand {
                         ConfigManager.openScreen("overlays")
                         1
                     })
+                    .then(literal("scoreboard").executes {
+                        ConfigManager.openScreen("scoreboard")
+                        1
+                    })
                     .then(literal("kuudra").executes {
                         ConfigManager.openScreen("kuudra")
                         1

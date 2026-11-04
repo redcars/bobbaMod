@@ -27,6 +27,11 @@ class BobbaConfig : Config() {
 
     @JvmField
     @Expose
+    @Category(name = "Scoreboard", desc = "Hide lines, resize and restyle the sidebar")
+    var scoreboard: ScoreboardCategory = ScoreboardCategory()
+
+    @JvmField
+    @Expose
     @Category(name = "Kuudra", desc = "Kuudra boss and lair tweaks")
     var kuudra: KuudraCategory = KuudraCategory()
 

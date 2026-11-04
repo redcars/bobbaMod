@@ -3,9 +3,13 @@ package bobba.mod.client.config
 import bobba.mod.client.config.editor.ConfigEditorKuudraFace
 import bobba.mod.client.config.editor.ConfigEditorOverlayList
 import bobba.mod.client.config.editor.ConfigEditorRandomClips
+import bobba.mod.client.config.editor.ConfigEditorScoreboardBackground
+import bobba.mod.client.config.editor.ConfigEditorScoreboardLines
 import bobba.mod.client.config.editor.GuiOptionEditorKuudraFace
 import bobba.mod.client.config.editor.GuiOptionEditorOverlayList
 import bobba.mod.client.config.editor.GuiOptionEditorRandomClips
+import bobba.mod.client.config.editor.GuiOptionEditorScoreboardBackground
+import bobba.mod.client.config.editor.GuiOptionEditorScoreboardLines
 import bobba.mod.client.update.ConfigEditorVersionStatus
 import bobba.mod.client.update.GuiOptionEditorVersionStatus
 import io.github.notenoughupdates.moulconfig.common.IMinecraft
@@ -36,6 +40,12 @@ object ConfigManager {
             }
             customProcessor<ConfigEditorRandomClips> { option, _ ->
                 GuiOptionEditorRandomClips(option)
+            }
+            customProcessor<ConfigEditorScoreboardBackground> { option, _ ->
+                GuiOptionEditorScoreboardBackground(option)
+            }
+            customProcessor<ConfigEditorScoreboardLines> { option, _ ->
+                GuiOptionEditorScoreboardLines(option)
             }
         }
     }
