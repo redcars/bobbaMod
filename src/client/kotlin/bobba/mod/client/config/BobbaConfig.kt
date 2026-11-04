@@ -32,6 +32,11 @@ class BobbaConfig : Config() {
 
     @JvmField
     @Expose
+    @Category(name = "Players", desc = "Resize players and make them see-through")
+    var players: PlayersCategory = PlayersCategory()
+
+    @JvmField
+    @Expose
     @Category(name = "Kuudra", desc = "Kuudra boss and lair tweaks")
     var kuudra: KuudraCategory = KuudraCategory()
 

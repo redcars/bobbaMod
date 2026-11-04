@@ -20,6 +20,10 @@ object ConfigCommand {
                         ConfigManager.openScreen("scoreboard")
                         1
                     })
+                    .then(literal("players").executes {
+                        ConfigManager.openScreen("players")
+                        1
+                    })
                     .then(literal("kuudra").executes {
                         ConfigManager.openScreen("kuudra")
                         1
