@@ -1,5 +1,22 @@
 # Changelog
 
+## [4.1.0](https://github.com/redcars/bobbaMod/compare/v4.0.0...v4.1.0) (2026-11-17)
+
+
+### Features
+
+* add Kuudra boss face override ([cd82bc9](https://github.com/redcars/bobbaMod/commit/cd82bc9846dafba11246db056432909c94cebf60))
+* add Kuudra boss face override ([4e1d3d0](https://github.com/redcars/bobbaMod/commit/4e1d3d0aff4c4b04263e1569853adcdfa088d420))
+* add Players tab ([abd2238](https://github.com/redcars/bobbaMod/commit/abd2238a1c4c7ac79a1543d38585b9ec763f37e7))
+* add random audio/video clips ([5b2d626](https://github.com/redcars/bobbaMod/commit/5b2d626d2b1d976b229e49a39fd1a90c69d3f645))
+* add random audio/video clips ([4521678](https://github.com/redcars/bobbaMod/commit/45216786c925cc5d1c36032863e42c9a41e90b26))
+* add Scoreboard and Players tabs ([eba2398](https://github.com/redcars/bobbaMod/commit/eba2398787b71d6488c9a48d9e06098edc06b0a1))
+* add Scoreboard tab ([d21e5b4](https://github.com/redcars/bobbaMod/commit/d21e5b4a43adadc11d056c5b40bf164669c159ec))
+* add World tab with time and weather overrides ([86e3518](https://github.com/redcars/bobbaMod/commit/86e35189c5447fe169b407091f449086d88a3b7b))
+* add World tab with time and weather overrides ([a82bb5b](https://github.com/redcars/bobbaMod/commit/a82bb5b6fe69e960eb1067968a1ec1fa797690ce))
+* hide the Kuudra lair walls and roof ([aa25022](https://github.com/redcars/bobbaMod/commit/aa250225b60e4b5eed1a00c70ff36b12d152bd3c))
+* hide the Kuudra lair walls and roof ([e8b9d13](https://github.com/redcars/bobbaMod/commit/e8b9d13f6a39dcd75da59b9ec2b04f44925203a2))
+
 ## [4.0.0](https://github.com/redcars/bobbaMod/compare/v3.0.0...v4.0.0) (2026-11-03)
 
 
