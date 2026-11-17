@@ -37,6 +37,11 @@ class BobbaConfig : Config() {
 
     @JvmField
     @Expose
+    @Category(name = "World", desc = "Your own time of day and weather")
+    var world: WorldCategory = WorldCategory()
+
+    @JvmField
+    @Expose
     @Category(name = "Kuudra", desc = "Kuudra boss and lair tweaks")
     var kuudra: KuudraCategory = KuudraCategory()
 

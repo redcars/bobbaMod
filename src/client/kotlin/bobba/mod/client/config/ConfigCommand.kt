@@ -24,6 +24,10 @@ object ConfigCommand {
                         ConfigManager.openScreen("players")
                         1
                     })
+                    .then(literal("world").executes {
+                        ConfigManager.openScreen("world")
+                        1
+                    })
                     .then(literal("kuudra").executes {
                         ConfigManager.openScreen("kuudra")
                         1
