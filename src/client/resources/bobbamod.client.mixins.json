@@ -7,9 +7,11 @@
 		"AvatarRenderStateMixin",
 		"CapeLayerMixin",
 		"ChatScreenMixin",
+		"ClientClockManagerMixin",
 		"EquipmentLayerRendererMixin",
 		"HudScoreboardMixin",
 		"InventoryScreenMixin",
+		"LevelWeatherMixin",
 		"LivingEntityRendererMixin",
 		"RenderSectionRegionMixin",
 		"ScreenFilesDropMixin"
